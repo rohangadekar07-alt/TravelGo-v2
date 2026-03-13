@@ -8,6 +8,25 @@ window.addEventListener('scroll', () => {
     }
 });
 
+// Mobile Menu Toggle
+const menuBtn = document.querySelector('.menu-btn');
+const navLinks = document.querySelector('.nav-links');
+
+if (menuBtn) {
+    menuBtn.addEventListener('click', () => {
+        menuBtn.classList.toggle('active');
+        navLinks.classList.toggle('active');
+    });
+}
+
+// Close menu when clicking links
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+        menuBtn.classList.remove('active');
+        navLinks.classList.remove('active');
+    });
+});
+
 // Form Submission
 const inquiryForm = document.getElementById('inquiryForm');
 const formStatus = document.getElementById('formStatus');

@@ -101,6 +101,22 @@ h1, h2, h3, h4, .logo {
     box-shadow: 0 6px 20px rgba(58, 134, 255, 0.3);
 }
 
+.menu-btn {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+.menu-btn .bar {
+    width: 25px;
+    height: 3px;
+    background: var(--text-dark);
+    border-radius: 3px;
+    transition: var(--transition);
+}
+
 /* Hero Section */
 .hero {
     height: 100vh;
@@ -433,10 +449,40 @@ section {
 
 /* Responsive */
 @media (max-width: 768px) {
-    .nav-links {
-        display: none;
+    .menu-btn {
+        display: flex;
     }
-    
+
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 70%;
+        height: 100vh;
+        background: white;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        transition: 0.5s ease-in-out;
+        box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+        z-index: 1000;
+    }
+
+    .nav-links.active {
+        right: 0;
+    }
+
+    .menu-btn.active .bar:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+    .menu-btn.active .bar:nth-child(2) {
+        opacity: 0;
+    }
+    .menu-btn.active .bar:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
     .form-grid {
         grid-template-columns: 1fr;
     }
