@@ -114,6 +114,26 @@ app.get('/api/admin/data', async (req, res) => {
     }
 });
 
+// 5. Delete Inquiry
+app.delete('/api/admin/inquiries/:id', async (req, res) => {
+    try {
+        await Inquiry.findByIdAndDelete(req.params.id);
+        res.json({ success: true, message: 'Inquiry deleted' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+// 6. Delete Booking
+app.delete('/api/admin/bookings/:id', async (req, res) => {
+    try {
+        await Booking.findByIdAndDelete(req.params.id);
+        res.json({ success: true, message: 'Booking deleted' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
 // Serve the admin page explicitly if needed
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
