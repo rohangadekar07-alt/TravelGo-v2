@@ -528,6 +528,18 @@ section {
     .stat-item p {
         font-size: 0.8rem;
     }
+
+    section {
+        padding: 50px 0;
+    }
+
+    .destinations {
+        padding-bottom: 20px;
+    }
+
+    .booking {
+        padding-top: 20px;
+    }
 }
 
 /* Toast Notification */
