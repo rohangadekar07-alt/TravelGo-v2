@@ -468,31 +468,13 @@
             color: #111827;
         }
 
+        /* Chart */
         .chart-container {
             background: white;
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             margin-bottom: 30px;
-        }
-
-        .btn-delete {
-            background: #fee2e2;
-            color: #ef4444;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-top: 10px;
-        }
-        .btn-delete:hover {
-            background: #ef4444;
-            color: white;
         }
     </style>
 
@@ -586,10 +568,8 @@
                                 <small style="display:block; font-size:0.7rem;">${bnq.duration}</small>
                             </div>
                             <div class="field">
-                                <span class="field-label">Actions</span>
-                                <button class="btn-delete" onclick="deleteData('bookings', '${bnq._id}')">
-                                    <i class="fas fa-trash-can"></i> Delete
-                                </button>
+                                <span class="field-label">Status</span>
+                                <span class="field-value" style="color: #10b981;">✅ Confirmed</span>
                             </div>
                         </div>
                     `).join('');
@@ -617,11 +597,9 @@
                                 <span class="field-label">Destination</span>
                                 <div class="badge-spot">${inq.travelSpot}</div>
                             </div>
-                            <div class="field" style="display: flex; flex-direction: column; justify-content: space-between;">
-                                <span class="field-label">Actions</span>
-                                <button class="btn-delete" onclick="deleteData('inquiries', '${inq._id}')">
-                                    <i class="fas fa-trash-can"></i> Delete
-                                </button>
+                            <div class="field">
+                                <span class="field-label">Date</span>
+                                <span class="field-value">${new Date(inq.travelDate).toLocaleDateString()}</span>
                             </div>
                         </div>
                     `).join('');
@@ -629,25 +607,6 @@
 
             } catch (err) {
                 console.error(err);
-            }
-        }
-
-        // Delete Function
-        async function deleteData(type, id) {
-            if (!confirm('Are you sure you want to delete this record?')) return;
-
-            try {
-                const res = await fetch(`/api/admin/${type}/${id}`, {
-                    method: 'DELETE'
-                });
-                const data = await res.json();
-                if (data.success) {
-                    loadDashboardData(); // Refresh current view
-                } else {
-                    alert('Failed to delete.');
-                }
-            } catch (err) {
-                alert('Server error.');
             }
         }
 
