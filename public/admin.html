@@ -327,25 +327,25 @@
             </div>
             <nav class="sidebar-nav">
                 <div class="nav-item active" onclick="switchView('all', this)">
-                    <span class="nav-icon">🏠</span>
+                    <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
                     <span class="nav-text">Dashboard</span>
                 </div>
                 <div class="nav-item" onclick="switchView('bookings', this)">
-                    <span class="nav-icon">💎</span>
+                    <span class="nav-icon"><i class="fas fa-suitcase-rolling"></i></span>
                     <span class="nav-text">Bookings</span>
                 </div>
                 <div class="nav-item" onclick="switchView('inquiries', this)">
-                    <span class="nav-icon">📩</span>
+                    <span class="nav-icon"><i class="fas fa-envelope-open-text"></i></span>
                     <span class="nav-text">Inquiries</span>
                 </div>
                 <a href="/" class="nav-item" style="margin-top: auto; text-decoration: none; color: inherit;">
-                    <span class="nav-icon">🌍</span>
+                    <span class="nav-icon"><i class="fas fa-house"></i></span>
                     <span class="nav-text">Back to Site</span>
                 </a>
             </nav>
             <div class="sidebar-footer">
                 <button id="logoutBtn" class="btn-logout">
-                    <span class="nav-icon">🚪</span>
+                    <span class="nav-icon"><i class="fas fa-right-from-bracket"></i></span>
                     <span class="nav-text">Logout</span>
                 </button>
             </div>
@@ -363,25 +363,24 @@
                 <div style="font-size: 0.8rem; color: #6b7280; text-align: right;" id="lastUpdate">Loading...</div>
             </header>
 
-            <!-- Stats Overview -->
             <div id="statsSection">
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-icon" style="background: #ecfdf5; color: #10b981;">💰</div>
+                        <div class="stat-icon" style="background: #ecfdf5; color: #10b981;"><i class="fas fa-indian-rupee-sign"></i></div>
                         <div class="stat-info">
                             <span class="stat-label">Total Revenue</span>
                             <h3 id="totalRevenue">Rs 0</h3>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon" style="background: #eff6ff; color: #3b82f6;">💎</div>
+                        <div class="stat-icon" style="background: #eff6ff; color: #3b82f6;"><i class="fas fa-check-double"></i></div>
                         <div class="stat-info">
                             <span class="stat-label">Total Bookings</span>
                             <h3 id="totalBookingsCount">0</h3>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon" style="background: #fdf2f8; color: #ec4899;">📩</div>
+                        <div class="stat-icon" style="background: #fdf2f8; color: #ec4899;"><i class="fas fa-comment-dots"></i></div>
                         <div class="stat-info">
                             <span class="stat-label">New Inquiries</span>
                             <h3 id="totalInquiryCount">0</h3>
