@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | TravelGO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3a86ff;
+            --primary-dark: #2563eb;
+            --dark: #0f172a;
+            --slate: #64748b;
+            --light: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: white;
+            width: 100%;
+            max-width: 440px;
+            padding: 30px 30px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .auth-header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .auth-header p {
+            color: var(--slate);
+            font-size: 0.95rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--slate);
+            font-size: 0.9rem;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px; /* Default padding */
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: 0.3s;
+            background: #fbfcfe;
+        }
+
+        /* Specific padding for fields with left icons */
+        .input-wrapper i:not(.toggle-password) + input {
+            padding-left: 42px;
+        }
+
+        /* Specific padding for password field (right toggle only) */
+        input[type="password"]#password {
+            padding-right: 45px !important;
+            padding-left: 15px !important;
+        }
+
+        .input-wrapper i.toggle-password {
+            position: absolute !important;
+            right: 15px !important;
+            left: auto !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            cursor: pointer;
+            color: var(--slate);
+            font-size: 0.9rem;
+            transition: 0.2s;
+            z-index: 20;
+            display: block !important;
+        }
+
+        /* Hide browser default eye icon completely */
+        input::-ms-reveal,
+        input::-ms-clear,
+        input::-webkit-contacts-auto-fill-button,
+        input::-webkit-credentials-auto-fill-button,
+        input::-webkit-reveal {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+
+        /* Hide browser default eye icon */
+        input::-ms-reveal,
+        input::-ms-clear,
+        input::-webkit-contacts-auto-fill-button,
+        input::-webkit-credentials-auto-fill-button {
+            display: none !important;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary);
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(58, 134, 255, 0.1);
+        }
+
+        /* Send OTP Button inside input */
+        .email-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-send-otp {
+            position: absolute;
+            right: 8px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            z-index: 5;
+        }
+
+        .btn-send-otp:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-send-otp:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .otp-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .otp-input:disabled {
+            background: #f1f5f9 !important;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* Location Button */
+        #getLocationBtn {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--slate);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: 0.2s;
+        }
+
+        #getLocationBtn:hover {
+            background: #e2e8f0;
+            color: var(--dark);
+        }
+
+        #getLocationBtn.active {
+            background: #dcfce7;
+            border-color: #86efac;
+            color: #166534;
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-register:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(58, 134, 255, 0.2);
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: var(--slate);
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        #msg {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .msg-error { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        .msg-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+
+        @media (max-width: 480px) {
+            .auth-card { padding: 30px 20px; }
+            .input-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card">
+        <div class="auth-header">
+            <a href="/" class="logo">TravelGO</a>
+            <h1>Create Account</h1>
+            <p>Join TravelGO and start your journey</p>
+        </div>
+
+        <div id="msg"></div>
+
+        <form id="registerForm" autocomplete="off">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <div class="input-wrapper">
+                        <i class="far fa-user"></i>
+                        <input type="text" id="name" placeholder="John Doe" required>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Email Address</label>
+                        <div class="input-wrapper email-wrapper">
+                            <i class="far fa-envelope"></i>
+                            <input type="email" id="email" placeholder="john@example.com" required autocomplete="off" style="padding-right: 100px;">
+                            <button type="button" class="btn-send-otp" id="sendOtpBtn">Send OTP</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="form-group">
+                        <label>Email OTP (6-Digit Code)</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-key"></i>
+                            <input type="text" id="otp" placeholder="Enter OTP" maxlength="6" class="otp-input" disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-mobile-alt"></i>
+                            <input type="tel" id="mobile" placeholder="10-digit number" pattern="[0-9]{10}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Residential Address</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <input type="text" id="address" placeholder="123 Street, City, Country" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button type="button" id="getLocationBtn">
+                        <i class="fas fa-location-arrow"></i> 
+                        <span>Add Live Location (Optional)</span>
+                    </button>
+                    <input type="hidden" id="latitude">
+                    <input type="hidden" id="longitude">
+                </div>
+
+                <div class="form-group">
+                    <label>Create Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" placeholder="Min. 6 characters" minlength="6" required autocomplete="new-password">
+                        <i class="far fa-eye toggle-password" id="togglePassword"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-register">
+                    <span>Create Account</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account? <a href="login.html">Log In</a>
+        </div>
+    </div>
+
+    <script>
+        const getLocationBtn = document.getElementById('getLocationBtn');
+        const latInput = document.getElementById('latitude');
+        const lonInput = document.getElementById('longitude');
+        const msg = document.getElementById('msg');
+
+        getLocationBtn.onclick = () => {
+            // If already active, treat as "Reset"
+            if (getLocationBtn.classList.contains('active')) {
+                latInput.value = '';
+                lonInput.value = '';
+                document.getElementById('address').value = '';
+                getLocationBtn.innerHTML = '<i class="fas fa-location-arrow"></i> Add Live Location (Optional)';
+                getLocationBtn.classList.remove('active');
+                return;
+            }
+
+            if (navigator.geolocation) {
+                getLocationBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Getting Location...';
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lon;
+
+                    try {
+                        // Check for Google Maps Key from backend
+                        const configRes = await fetch('/api/config');
+                        const { googleMapsKey } = await configRes.json();
+
+                        let address = '';
+                        if (googleMapsKey) {
+                            // Use Google Maps Geocoding (Strong & Accurate)
+                            const googleRes = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${googleMapsKey}`);
+                            const googleData = await googleRes.json();
+                            if (googleData.results && googleData.results[0]) {
+                                address = googleData.results[0].formatted_address;
+                            }
+                        } else {
+                            // Fallback to Nominatim (Free)
+                            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&addressdetails=1`);
+                            const data = await response.json();
+                            if (data && data.display_name) {
+                                address = data.display_name;
+                            }
+                        }
+                        
+                        if (address) {
+                            document.getElementById('address').value = address;
+                        }
+                    } catch (error) {
+                        console.error('Error fetching address:', error);
+                    }
+
+                    getLocationBtn.innerHTML = '<i class="fas fa-times-circle"></i> Location Added (Click to Reset)';
+                    getLocationBtn.classList.add('active');
+                }, (err) => {
+                    alert('Unable to retrieve location: ' + err.message);
+                    getLocationBtn.innerHTML = '<i class="fas fa-location-arrow"></i> Add Live Location (Optional)';
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 8000,
+                    maximumAge: 0
+                });
+            } else {
+                alert('Geolocation is not supported by your browser.');
+            }
+        };
+
+        const sendOtpBtn = document.getElementById('sendOtpBtn');
+        const otpSection = document.getElementById('otpSection');
+        const otpInput = document.getElementById('otp');
+
+        // Send OTP Logic
+        sendOtpBtn.onclick = async () => {
+            const email = document.getElementById('email').value;
+            if (!email || !email.includes('@')) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            try {
+                sendOtpBtn.disabled = true;
+                const originalText = sendOtpBtn.innerHTML;
+                sendOtpBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                const response = await fetch('/api/auth/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    msg.textContent = data.message;
+                    msg.className = 'msg-success';
+                    msg.style.display = 'block';
+                    otpInput.disabled = false;
+                    otpInput.focus();
+                    
+                    // Countdown for resend
+                    let count = 60;
+                    const timer = setInterval(() => {
+                        count--;
+                        sendOtpBtn.textContent = `Resend (${count}s)`;
+                        if (count <= 0) {
+                            clearInterval(timer);
+                            sendOtpBtn.disabled = false;
+                            sendOtpBtn.textContent = 'Resend OTP';
+                        }
+                    }, 1000);
+                } else {
+                    msg.textContent = data.message + (data.error ? ': ' + data.error : '');
+                    msg.className = 'msg-error';
+                    msg.style.display = 'block';
+                    sendOtpBtn.disabled = false;
+                    sendOtpBtn.innerHTML = originalText;
+                }
+            } catch (error) {
+                alert('Connection error. Try again.');
+                sendOtpBtn.disabled = false;
+                sendOtpBtn.textContent = 'Send OTP';
+            }
+        };
+
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        togglePassword.onclick = () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            togglePassword.classList.toggle('fa-eye');
+            togglePassword.classList.toggle('fa-eye-slash');
+        };
+
+        document.getElementById('registerForm').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const otpValue = otpInput.value;
+            if (!otpValue) {
+                alert('Please click "Send OTP" and enter the code received in your email');
+                return;
+            }
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+
+            const formData = {
+                fullName: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                mobileNumber: document.getElementById('mobile').value,
+                address: document.getElementById('address').value,
+                password: document.getElementById('password').value,
+                otp: otpValue,
+                liveLocation: latInput.value ? {
+                    latitude: latInput.value,
+                    longitude: lonInput.value,
+                    timestamp: new Date()
+                } : null
+            };
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    msg.textContent = data.message;
+                    msg.className = 'msg-success';
+                    msg.style.display = 'block';
+                    e.target.reset();
+                    setTimeout(() => window.location.href = '/login.html', 500);
+                } else {
+                    msg.textContent = data.message + (data.error ? ': ' + data.error : '');
+                    msg.className = 'msg-error';
+                    msg.style.display = 'block';
+                }
+            } catch (err) {
+                msg.textContent = 'Connection error. Please try again.';
+                msg.className = 'msg-error';
+                msg.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Create Account</span> <i class="fas fa-arrow-right"></i>';
+            }
+        };
+    </script>
+</body>
+</html>

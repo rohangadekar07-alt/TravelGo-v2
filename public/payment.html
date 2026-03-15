@@ -22,7 +22,11 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             color: var(--dark);
-            min-height: 100vh;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         /* Simplified Checkout Navbar */
@@ -71,16 +75,22 @@
         /* Main Content */
         .checkout-wrapper {
             max-width: 1100px;
-            margin: 40px auto;
-            padding: 0 20px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px 20px;
+            flex: 1;           /* Fill remaining height after nav */
+            overflow-y: auto;  /* If content is taller, scroll here only */
+            display: flex;
+            flex-direction: column;
         }
 
         /* Progress Stepper */
         .stepper {
             display: flex;
             justify-content: center;
-            margin-bottom: 40px;
+            margin-bottom: 15px;
             gap: 10px;
+            flex-shrink: 0;
         }
 
         .step {
@@ -134,15 +144,21 @@
         .checkout-grid {
             display: grid;
             grid-template-columns: 1.2fr 0.8fr;
-            gap: 30px;
+            gap: 25px;
+            flex: 1;       /* Grow to fill all wrapper height */
+            min-height: 0; /* Allow shrinking */
+            overflow: hidden;
         }
 
-        /* Left Side: Payment */
+        /* Left Side: Payment - scrollable internally */
         .payment-box {
             background: white;
-            border-radius: 24px;
+            border-radius: 20px;
             box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
+            min-height: 0;
             animation: slideInLeft 0.6s ease-out;
         }
 
@@ -152,32 +168,37 @@
         }
 
         .payment-header {
-            padding: 30px;
+            padding: 22px 28px;
             border-bottom: 1px solid #f1f5f9;
+            flex-shrink: 0;
         }
 
         .payment-header h2 {
             margin: 0;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-family: 'Outfit', sans-serif;
         }
 
         .payment-header p {
-            margin: 5px 0 0;
+            margin: 4px 0 0;
             color: #64748b;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .payment-body {
-            padding: 30px;
+            padding: 18px 22px;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
         }
 
         .payment-method-card {
             border: 2px solid var(--primary);
-            border-radius: 16px;
-            padding: 20px;
+            border-radius: 14px;
+            padding: 14px;
             background: #f0f7ff;
-            margin-bottom: 30px;
             position: relative;
         }
 
@@ -185,7 +206,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
 
         .method-info {
@@ -204,7 +225,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 10px;
         }
 
         .qr-wrapper {
@@ -216,8 +237,8 @@
         }
 
         .qr-wrapper img {
-            width: 180px;
-            height: 180px;
+            width: 130px;
+            height: 130px;
             display: block;
         }
 
@@ -236,8 +257,7 @@
         .info-cards {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 10px;
         }
 
         .info-card {
@@ -261,10 +281,12 @@
             line-height: 1.4;
         }
 
-        /* Right Side: Summary */
+        /* Right Side: Summary - scrollable internally */
         .summary-box {
-            position: sticky;
-            top: 100px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
             animation: slideInRight 0.6s ease-out;
         }
 
@@ -275,49 +297,66 @@
 
         .summary-card {
             background: white;
-            border-radius: 24px;
+            border-radius: 20px;
             box-shadow: var(--card-shadow);
-            padding: 30px;
+            padding: 20px 22px;
             border: 1px solid #f1f5f9;
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .summary-card h3 {
             font-family: 'Outfit', sans-serif;
-            margin: 0 0 20px;
-            font-size: 1.25rem;
+            margin: 0 0 12px;
+            font-size: 1.1rem;
+        }
+
+        /* Scrollable top zone */
+        .summary-scroll-zone {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        /* Pinned bottom zone */
+        .summary-footer {
+            flex-shrink: 0;
+            padding-top: 10px;
         }
 
         .destination-preview {
             display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            padding-bottom: 25px;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
             border-bottom: 1px solid #f1f5f9;
         }
 
         .preview-img {
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
             object-fit: cover;
         }
 
         .preview-text h4 {
-            margin: 0 0 5px;
-            font-size: 1.1rem;
+            margin: 0 0 3px;
+            font-size: 0.95rem;
         }
 
         .preview-text p {
             margin: 0;
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             color: #64748b;
         }
 
         .detail-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
-            font-size: 0.95rem;
+            margin-bottom: 8px;
+            font-size: 0.88rem;
         }
 
         .detail-label {
@@ -329,8 +368,8 @@
         }
 
         .total-section {
-            margin-top: 25px;
-            padding-top: 25px;
+            margin-top: 10px;
+            padding-top: 10px;
             border-top: 1px dashed #e2e8f0;
             display: flex;
             justify-content: space-between;
@@ -339,11 +378,11 @@
 
         .total-label {
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 0.98rem;
         }
 
         .total-price {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 800;
             color: var(--secondary);
             font-family: 'Outfit', sans-serif;
@@ -351,21 +390,22 @@
 
         .btn-confirm {
             width: 100%;
-            margin-top: 30px;
-            padding: 16px;
+            margin-top: 10px;
+            padding: 12px;
             background: var(--gradient);
             color: white;
             border: none;
-            border-radius: 14px;
-            font-size: 1.1rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            box-shadow: 0 10px 20px rgba(58, 134, 255, 0.2);
+            gap: 8px;
+            box-shadow: 0 6px 14px rgba(58, 134, 255, 0.2);
+            flex-shrink: 0;
         }
 
         .btn-confirm:disabled {
@@ -382,14 +422,15 @@
 
         .btn-back {
             width: 100%;
-            margin-top: 15px;
+            margin-top: 6px;
             background: transparent;
             border: none;
             color: #94a3b8;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 500;
             cursor: pointer;
             text-decoration: underline;
+            padding: 4px 0;
         }
 
         .btn-back:hover {
@@ -423,12 +464,18 @@
         @media (max-width: 900px) {
             .checkout-grid {
                 grid-template-columns: 1fr;
+                gap: 20px;
             }
             .summary-box {
                 position: static;
+                order: -1; /* Show summary at top on mobile */
             }
             .checkout-wrapper {
                 margin: 20px auto;
+            }
+            .stepper {
+                transform: scale(0.85);
+                margin-bottom: 25px;
             }
         }
 
@@ -437,6 +484,19 @@
                 grid-template-columns: 1fr;
             }
             .stepper {
+                display: none;
+            }
+            .payment-header, .payment-body {
+                padding: 20px;
+            }
+            .qr-wrapper img {
+                width: 150px;
+                height: 150px;
+            }
+            .checkout-nav .logo {
+                font-size: 1.2rem;
+            }
+            .secure-badge span {
                 display: none;
             }
         }
@@ -524,44 +584,51 @@
             <div class="summary-box">
                 <div class="summary-card">
                     <h3>Booking Summary</h3>
-                    
-                    <div class="destination-preview">
-                        <img src="" id="summImg" alt="Destination" class="preview-img">
-                        <div class="preview-text">
-                            <h4 id="summPackage">-</h4>
-                            <p id="summID">Booking ID: -</p>
+
+                    <!-- SCROLLABLE ZONE: image + detail rows -->
+                    <div class="summary-scroll-zone">
+                        <div class="destination-preview">
+                            <img src="" id="summImg" alt="Destination" class="preview-img">
+                            <div class="preview-text">
+                                <h4 id="summPackage">-</h4>
+                                <p id="summID">Booking ID: -</p>
+                            </div>
+                        </div>
+
+                        <div class="summary-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Travel Date</span>
+                                <span class="detail-value" id="summDate">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Traveler Name</span>
+                                <span class="detail-value" id="summName">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Status</span>
+                                <span class="detail-value" style="color: #f59e0b;">Awaiting Payment</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="summary-details">
-                        <div class="detail-item">
-                            <span class="detail-label">Travel Date</span>
-                            <span class="detail-value" id="summDate">-</span>
+                    <!-- PINNED FOOTER: always visible -->
+                    <div class="summary-footer">
+                        <div class="total-section">
+                            <span class="total-label">Amount to Pay</span>
+                            <span class="total-price" id="summAmount">Rs 0</span>
                         </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Traveler Name</span>
-                            <span class="detail-value" id="summName">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Status</span>
-                            <span class="detail-value" style="color: #f59e0b;">Awaiting Payment</span>
-                        </div>
-                    </div>
 
-                    <div class="total-section">
-                        <span class="total-label">Amount to Pay</span>
-                        <span class="total-price" id="summAmount">Rs 0</span>
+                        <button class="btn-confirm" id="btnConfirm" disabled>
+                            <i class="fas fa-check-circle"></i> Confirm Booking
+                        </button>
+                        
+                        <button class="btn-back" onclick="window.location.href='/payment-options.html'">← Back to Payment Options</button>
                     </div>
-
-                    <button class="btn-confirm" id="btnConfirm" disabled>
-                        <i class="fas fa-check-circle"></i> Confirm Booking
-                    </button>
-                    
-                    <button class="btn-back" onclick="window.history.back()">Back to Details</button>
                 </div>
             </div>
         </div>
     </main>
+
 
     <div class="loader-overlay" id="loader">
         <div class="custom-loader"></div>
@@ -621,7 +688,10 @@
                 try {
                     const response = await fetch('/api/bookings', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : ''
+                        },
                         body: JSON.stringify({
                             ...bookingData,
                             paymentStatus: 'Paid',

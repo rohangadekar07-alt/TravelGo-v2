@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Pending | TravelGO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --primary: #3a86ff;
+            --orange: #f59e0b;
+            --green: #10b981;
+            --dark: #0f172a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fef3c7 0%, #fff7ed 50%, #f0f4ff 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--dark);
+        }
+
+        .card {
+            background: white;
+            border-radius: 28px;
+            padding: 30px 40px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.1);
+            text-align: center;
+            animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Animated clock icon */
+        .icon-wrap {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 14px rgba(245, 158, 11, 0); }
+        }
+
+        .icon-wrap i {
+            font-size: 2rem;
+            color: #d97706;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        /* Booking Info Box */
+        .info-box {
+            background: #fffbeb;
+            border: 1.5px solid #fde68a;
+            border-radius: 16px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 0;
+            font-size: 0.88rem;
+            border-bottom: 1px solid #fef3c7;
+        }
+
+        .info-row:last-child { border-bottom: none; }
+        .info-row .label { color: #92400e; font-weight: 500; }
+        .info-row .value { font-weight: 700; color: #78350f; }
+
+        /* Status steps */
+        .status-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .status-steps::before {
+            content: '';
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            right: 18px;
+            height: 2px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            z-index: 1;
+        }
+
+        .step-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #94a3b8;
+        }
+
+        .step-dot.done { background: var(--green); color: white; }
+        .step-dot.active {
+            background: var(--orange);
+            color: white;
+            animation: spin-pulse 1.5s infinite;
+        }
+
+        @keyframes spin-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.5); }
+            50% { box-shadow: 0 0 0 8px rgba(245,158,11,0); }
+        }
+
+        .step-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* Notice */
+        .notice {
+            background: #f0f9ff;
+            border: 1.5px solid #bae6fd;
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            gap: 10px;
+            font-size: 0.78rem;
+            color: #0369a1;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .notice i { margin-top: 2px; flex-shrink: 0; }
+
+        .btn-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 28px;
+            background: linear-gradient(135deg, #3a86ff, #8338ec);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(58,134,255,0.3);
+        }
+        .btn-home:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(58,134,255,0.4); }
+
+        @media (max-width: 480px) {
+            .card { padding: 32px 22px; }
+            h1 { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <!-- Animated Pending Icon -->
+        <div class="icon-wrap">
+            <i class="fas fa-clock"></i>
+        </div>
+
+        <h1 id="mainTitle">Booking Request Sent!</h1>
+        <p class="subtitle" id="mainSubtitle">
+            Your cash booking request has been received. Our admin will verify and confirm your booking shortly.
+        </p>
+
+        <!-- Status Steps -->
+        <div class="status-steps">
+            <div class="step-item">
+                <div class="step-dot done"><i class="fas fa-check"></i></div>
+                <span class="step-label">Submitted</span>
+            </div>
+            <div class="step-item">
+                <div id="stepPending" class="step-dot active"><i class="fas fa-hourglass-half"></i></div>
+                <span class="step-label">Pending</span>
+            </div>
+            <div class="step-item">
+                <div id="stepConfirmed" class="step-dot">3</div>
+                <span class="step-label">Confirmed</span>
+            </div>
+        </div>
+
+        <!-- Booking Info Box -->
+        <div class="info-box">
+            <div class="info-row">
+                <span class="label">📋 Booking ID</span>
+                <span class="value" id="displayBookingId">—</span>
+            </div>
+            <div class="info-row">
+                <span class="label">🏖️ Destination</span>
+                <span class="value" id="displayDest">—</span>
+            </div>
+            <div class="info-row">
+                <span class="label">👤 Traveler</span>
+                <span class="value" id="displayName">—</span>
+            </div>
+            <div class="info-row">
+                <span class="label">💰 Amount</span>
+                <span class="value" id="displayPrice">—</span>
+            </div>
+            <div class="info-row">
+                <span class="label">💳 Payment</span>
+                <span class="value" id="displayStatus" style="color: #d97706;">⏳ Cash — Pending Confirmation</span>
+            </div>
+        </div>
+
+        <!-- Info Notice -->
+        <div class="notice" id="statusNotice">
+            <i class="fas fa-info-circle"></i>
+            <span>Admin will confirm your cash booking once you visit our office and complete the payment. You'll receive confirmation on your mobile number.</span>
+        </div>
+
+        <div id="actionBtnArea">
+            <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 12px;" id="lastCheckedText">
+                <i class="fas fa-sync-alt fa-spin"></i> Initializing status check...
+            </div>
+            <a href="/" class="btn-home">
+                <i class="fas fa-home"></i> Back to Home
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const booking = JSON.parse(sessionStorage.getItem('pendingBooking') || '{}');
+        const cashBookingId = sessionStorage.getItem('cashBookingId') || '—';
+        const cashDbId = sessionStorage.getItem('cashDbId');
+
+        document.getElementById('displayBookingId').textContent = cashBookingId;
+        document.getElementById('displayDest').textContent = booking.travelSpot || '—';
+        document.getElementById('displayName').textContent = booking.fullName || '—';
+        document.getElementById('displayPrice').textContent = booking.price || '—';
+
+        const lastCheckEl = document.getElementById('lastCheckedText');
+
+        async function checkStatus() {
+            // Use DB ID if available, fallback to Friendly TGO ID
+            const queryId = cashDbId || cashBookingId;
+            if (!queryId || queryId === '—') {
+                lastCheckEl.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i> Booking ID missing from session.';
+                return;
+            }
+
+            try {
+                // Add timestamp to prevent browser cache
+                const res = await fetch(`/api/bookings/status/${queryId}?t=${Date.now()}`);
+                
+                if (res.status === 503) {
+                    lastCheckEl.innerHTML = '<i class="fas fa-wifi" style="color:#f59e0b;"></i> Database connecting...';
+                    return;
+                }
+
+                const data = await res.json();
+                
+                lastCheckEl.innerHTML = `<i class="fas fa-check-circle"></i> Last checked: ${new Date().toLocaleTimeString()}`;
+
+                if (data.success && data.paymentStatus === 'Cash Confirmed') {
+                    updateUIToConfirmed();
+                }
+            } catch (err) {
+                lastCheckEl.innerHTML = '<i class="fas fa-server" style="color:#ef4444;"></i> Server connection issue...';
+                console.error('Status check failed:', err);
+            }
+        }
+
+        function updateUIToConfirmed() {
+            // Stop polling
+            if (window.statusInterval) clearInterval(window.statusInterval);
+
+            // 1. Change Icon
+            const iconWrap = document.querySelector('.icon-wrap');
+            iconWrap.style.background = 'linear-gradient(135deg, #dcfce7, #bbf7d0)';
+            iconWrap.innerHTML = '<i class="fas fa-check" style="color: #16a34a;"></i>';
+            iconWrap.style.animation = 'none';
+
+            // 2. Update Title/Text
+            document.getElementById('mainTitle').textContent = 'Booking Confirmed! 🎉';
+            document.getElementById('mainSubtitle').textContent = 'Your cash payment has been verified. Pack your bags, your trip is officially confirmed!';
+            
+            // 3. Update Status Steps
+            document.getElementById('stepPending').className = 'step-dot done';
+            document.getElementById('stepPending').innerHTML = '<i class="fas fa-check"></i>';
+            document.getElementById('stepConfirmed').className = 'step-dot done';
+            document.getElementById('stepConfirmed').innerHTML = '<i class="fas fa-check"></i>';
+
+            // 4. Update Info Box Status
+            const statusEl = document.getElementById('displayStatus');
+            statusEl.textContent = '✅ Cash Confirmed';
+            statusEl.style.color = '#16a34a';
+
+            // 5. Update Notice
+            const notice = document.getElementById('statusNotice');
+            notice.style.background = '#f0fdf4';
+            notice.style.borderColor = '#bbf7d0';
+            notice.style.color = '#166534';
+            notice.innerHTML = '<i class="fas fa-check-circle"></i> <span>Payment successful! Your booking details have been sent to your registered mobile number.</span>';
+
+            // 6. Add Success Button & Hide Poll text
+            lastCheckEl.style.display = 'none';
+            document.getElementById('actionBtnArea').innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                    <a href="/receipt.html" class="btn-home" style="background: white; color: var(--dark); border: 2px solid #e2e8f0;">
+                        <i class="fas fa-file-invoice"></i> Download Receipt
+                    </a>
+                    <a href="/success.html" class="btn-home" style="background: var(--green);">
+                        <i class="fas fa-ticket-alt"></i> View Booking Details
+                    </a>
+                </div>
+            `;
+        }
+
+        // Start checking every 2.5 seconds for instant feel
+        window.statusInterval = setInterval(checkStatus, 2500);
+        
+        // Initial check
+        checkStatus();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | TravelGO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3a86ff;
+            --primary-dark: #2563eb;
+            --dark: #0f172a;
+            --slate: #64748b;
+            --light: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: white;
+            width: 100%;
+            max-width: 440px;
+            padding: 50px 40px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .auth-header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .auth-header p {
+            color: var(--slate);
+            font-size: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--slate);
+            font-size: 1rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px; 
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: 0.3s;
+            background: #fbfcfe;
+        }
+
+        /* Specific padding for fields with left icons (Email) */
+        .input-wrapper i:not(.toggle-password) + input {
+            padding-left: 48px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(58, 134, 255, 0.1);
+        }
+
+        /* Specific padding for password field (right toggle only) */
+        input[type="password"]#password {
+            padding-right: 48px !important;
+            padding-left: 16px !important;
+        }
+
+        .input-wrapper i.toggle-password {
+            position: absolute !important;
+            right: 16px !important;
+            left: auto !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            cursor: pointer;
+            color: var(--slate);
+            font-size: 1rem;
+            transition: 0.2s;
+            z-index: 20;
+            display: block !important;
+        }
+
+        /* Hide browser default eye icon completely */
+        input::-ms-reveal,
+        input::-ms-clear,
+        input::-webkit-contacts-auto-fill-button,
+        input::-webkit-credentials-auto-fill-button,
+        input::-webkit-reveal {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-login:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(58, 134, 255, 0.2);
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.95rem;
+            color: var(--slate);
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        #msg {
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+            display: none;
+            text-align: center;
+        }
+
+        .msg-error { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        .msg-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+
+    </style>
+</head>
+<body>
+
+    <div class="auth-card">
+        <div class="auth-header">
+            <a href="/" class="logo">TravelGO</a>
+            <h1>Welcome Back</h1>
+            <p>Please enter your details to login</p>
+        </div>
+
+        <div id="msg"></div>
+
+        <form id="loginForm" autocomplete="off">
+            <div class="form-group">
+                <label>Email Address</label>
+                <div class="input-wrapper">
+                    <i class="far fa-envelope"></i>
+                    <input type="email" id="email" placeholder="name@example.com" required autocomplete="off">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label>Password</label>
+                    <a href="#" style="font-size: 0.8rem; color: var(--primary); text-decoration: none;">Forgot?</a>
+                </div>
+                <div class="input-wrapper">
+                    <input type="password" id="password" placeholder="••••••••" required autocomplete="off">
+                    <i class="far fa-eye toggle-password" id="togglePassword"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login">
+                <span>Login</span>
+                <i class="fas fa-sign-in-alt"></i>
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            Don't have an account? <a href="register.html">Create One</a>
+        </div>
+    </div>
+
+    <script>
+        const msg = document.getElementById('msg');
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        togglePassword.onclick = () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            togglePassword.classList.toggle('fa-eye');
+            togglePassword.classList.toggle('fa-eye-slash');
+        };
+
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+
+            const formData = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    msg.textContent = 'Login successful! Redirecting...';
+                    msg.className = 'msg-success';
+                    msg.style.display = 'block';
+                    
+                    // Store token and user info
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1000);
+                } else {
+                    msg.textContent = data.message;
+                    msg.className = 'msg-error';
+                    msg.style.display = 'block';
+                }
+            } catch (err) {
+                msg.textContent = 'Connection error. Please try again.';
+                msg.className = 'msg-error';
+                msg.style.display = 'block';
+            } finally {
+                if (!localStorage.getItem('token')) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<span>Login</span> <i class="fas fa-sign-in-alt"></i>';
+                }
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,3 +1,18 @@
+// Auth UI Toggle
+document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('token');
+    const authLinks = document.getElementById('authLinks');
+    const userProfile = document.getElementById('userProfile');
+
+    if (token) {
+        if (authLinks) authLinks.style.display = 'none';
+        if (userProfile) userProfile.style.display = 'block';
+    } else {
+        if (authLinks) authLinks.style.display = 'flex';
+        if (userProfile) userProfile.style.display = 'none';
+    }
+});
+
 // Navbar transparency and Active link on scroll
 window.addEventListener('scroll', () => {
     const navbar = document.querySelector('.navbar');
@@ -56,6 +71,13 @@ if (inquiryForm) {
     inquiryForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
+        // Auth Check
+        const token = localStorage.getItem('token');
+        if (!token) {
+            showToast('Please Login or Register first to send an Inquiry.', 'error');
+            return;
+        }
+
         // Show loading state
         const submitBtn = inquiryForm.querySelector('button[type="submit"]');
         const originalBtnText = submitBtn.textContent;
@@ -82,7 +104,8 @@ if (inquiryForm) {
             const response = await fetch('/api/inquiries', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : ''
                 },
                 body: JSON.stringify(formData)
             });
@@ -179,6 +202,16 @@ let currentSpot = '';
 
 // Book Spot Function (Opens Modal)
 function bookSpot(spotName) {
+    // Auth Check
+    const token = localStorage.getItem('token');
+    if (!token) {
+        showToast('Please Login or Register first to Book a trip.', 'error');
+        setTimeout(() => {
+            window.location.href = '/login.html';
+        }, 2000);
+        return;
+    }
+
     currentSpot = spotName;
     const pkg = packages[spotName];
     
@@ -187,7 +220,8 @@ function bookSpot(spotName) {
     document.getElementById('modalPrice').textContent = pkg.price;
     document.getElementById('modalImg').src = pkg.img;
     
-    document.getElementById('bookingModal').style.display = 'block';
+    // Always use 'flex' - overlay uses flexbox for centering (desktop) and full-screen (mobile)
+    document.getElementById('bookingModal').style.display = 'flex';
     document.body.style.overflow = 'hidden'; // Stop scroll
 }
 
@@ -213,6 +247,7 @@ if (modalForm) {
 
         const bookingData = {
             fullName: document.getElementById('modalName').value,
+            email: document.getElementById('modalEmail').value,
             mobileNumber: document.getElementById('modalPhone').value,
             travelDate: document.getElementById('modalDate').value,
             travelSpot: currentSpot,
@@ -229,11 +264,11 @@ if (modalForm) {
             submitBtn.style.opacity = '1';
             return;
         }
-        // Store booking data temporarily and redirect to QR payment page
+        // Store booking data temporarily and redirect to payment options page
         sessionStorage.setItem('pendingBooking', JSON.stringify(bookingData));
         
         setTimeout(() => {
-            window.location.href = '/payment.html';
+            window.location.href = '/payment-options.html';
         }, 800);
     });
 }
@@ -260,8 +295,20 @@ function startHeroSlideshow() {
             desc: "Experience the timeless beauty of vast dunes under endless horizons."
         },
         {
-            title: "Tropical Paradise Found",
-            desc: "Unwind in the lush greenery and vibrant culture of exotic escapes."
+            title: "The Eternal Taj Mahal",
+            desc: "Witness the timeless symbol of love in the heart of historic Agra."
+        },
+        {
+            title: "Heaven on Earth: Kashmir",
+            desc: "Experience the soul-stirring beauty of Dal Lake and snow-capped peaks."
+        },
+        {
+            title: "Serene Kerala Backwaters",
+            desc: "Unwind in luxury houseboats amidst lush green tropical canals."
+        },
+        {
+            title: "Royal Heritage Rajasthan",
+            desc: "Step into a world of majestic forts, golden palaces, and vibrant culture."
         }
     ];
     
@@ -293,9 +340,9 @@ function startHeroSlideshow() {
             heroDesc.style.opacity = '1';
             heroTitle.style.transform = 'translateY(0)';
             heroDesc.style.transform = 'translateY(0)';
-        }, 1000); // Sync with CSS transition
+        }, 800); // Sync with CSS transition
         
-    }, 6000); // Change every 6 seconds to account for text transition
+    }, 4000); // Change every 4 seconds for a faster feel
 }
 
 // Start slideshow when DOM is loaded

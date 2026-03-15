@@ -126,8 +126,39 @@
             </div>
         </div>
 
-        <a href="/" class="btn-home">Great! Return to Home</a>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <a href="/receipt.html" class="btn-receipt">
+                <i class="fas fa-file-invoice"></i> Download Payment Receipt
+            </a>
+            <a href="/" class="btn-home">Great! Return to Home</a>
+        </div>
     </div>
+
+    <!-- Extra styles for receipt button -->
+    <style>
+        .btn-receipt {
+            background: white;
+            color: var(--dark);
+            padding: 14px 40px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: 0.3s;
+            display: inline-block;
+            width: 100%;
+            box-sizing: border-box;
+            border: 2px solid #e1e4e8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-receipt:hover {
+            background: #f8fafc;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+    </style>
 
     <script>
         const booking = JSON.parse(sessionStorage.getItem('confirmedBooking'));

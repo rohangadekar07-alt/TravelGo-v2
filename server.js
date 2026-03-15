@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
+const jwt = require('jsonwebtoken'); // Added for optional auth in existing routes
 
 dotenv.config();
 
@@ -13,12 +14,23 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
+app.get('/api/config', (req, res) => {
+    res.json({ googleMapsKey: process.env.GOOGLE_MAPS_KEY || null });
+});
+
 app.use(express.static('public'));
 
-// Request Logger
+// Request Logger & DB Monitor
 app.use((req, res, next) => {
     if (req.method !== 'GET') {
         console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    }
+    // Check DB status for API routes
+    if (req.url.startsWith('/api/') && mongoose.connection.readyState !== 1) {
+        return res.status(503).json({ 
+            success: false, 
+            message: 'Database is currently disconnected. Please wait or check your connection.' 
+        });
     }
     next();
 });
@@ -40,39 +52,35 @@ mongoose.connection.on('error', err => {
     console.error('Mongoose connection error:', err);
 });
 
-// Inquiry Schema (For the main form)
-const inquirySchema = new mongoose.Schema({
-    fullName: { type: String, required: true },
-    email: { type: String, required: true },
-    mobileNumber: { type: String, required: true },
-    travelDate: { type: Date, required: true },
-    travelSpot: { type: String, required: true },
-    submittedAt: { type: Date, default: Date.now }
-});
-
-// Booking Schema (For the modal/confirmed bookings)
-const bookingSchema = new mongoose.Schema({
-    fullName: { type: String, required: true },
-    mobileNumber: { type: String, required: true },
-    travelDate: { type: Date, required: true },
-    travelSpot: { type: String, required: true },
-    travelMode: { type: String, required: true },
-    price: { type: String, required: true },
-    duration: { type: String, required: true },
-    paymentStatus: { type: String, default: 'Paid' },
-    bookingId: { type: String },
-    submittedAt: { type: Date, default: Date.now }
-});
-
-const Inquiry = mongoose.model('Inquiry', inquirySchema);
-const Booking = mongoose.model('Booking', bookingSchema);
+// Models
+const Inquiry = require('./models/Inquiry');
+const Booking = require('./models/Booking');
+const User = require('./models/User');
 
 // Routes
 // 1. Submit Inquiry (Main Form)
 app.post('/api/inquiries', async (req, res) => {
     try {
         const { fullName, email, mobileNumber, travelDate, travelSpot } = req.body;
-        const newInquiry = new Inquiry({ fullName, email, mobileNumber, travelDate, travelSpot });
+        
+        // Optional: Check if user is logged in
+        let userId = null;
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        if (token) {
+            try {
+                const decoded = jwt.verify(token, process.env.JWT_SECRET || 'travelgo_secret_key');
+                userId = decoded.id;
+            } catch (e) {}
+        }
+
+        const newInquiry = new Inquiry({ 
+            userId, 
+            fullName, 
+            email, 
+            mobileNumber, 
+            travelDate, 
+            travelSpot 
+        });
         await newInquiry.save();
         res.status(201).json({ success: true, message: 'Inquiry submitted successfully' });
     } catch (err) {
@@ -83,18 +91,88 @@ app.post('/api/inquiries', async (req, res) => {
 // 2. Submit Booking (Modal Form)
 app.post('/api/bookings', async (req, res) => {
     try {
-        const { fullName, mobileNumber, travelDate, travelSpot, travelMode, price, duration, paymentStatus, bookingId } = req.body;
+        const { fullName, email, mobileNumber, travelDate, travelSpot, travelMode, price, duration, paymentStatus, paymentMethod, bookingId } = req.body;
+        
+        // Optional: Check if user is logged in
+        let userId = null;
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        if (token) {
+            try {
+                const decoded = jwt.verify(token, process.env.JWT_SECRET || 'travelgo_secret_key');
+                userId = decoded.id;
+            } catch (e) {}
+        }
+
         const newBooking = new Booking({ 
-            fullName, mobileNumber, travelDate, travelSpot, travelMode, price, duration, paymentStatus, bookingId
+            userId,
+            fullName, email, mobileNumber, travelDate, travelSpot, travelMode, price, duration,
+            paymentStatus: paymentStatus || 'Paid',
+            paymentMethod: paymentMethod || 'Online',
+            bookingId
         });
         await newBooking.save();
-        res.status(201).json({ success: true, message: 'Booking confirmed successfully' });
+        res.status(201).json({ success: true, message: 'Booking submitted successfully', bookingId: newBooking._id });
     } catch (err) {
         res.status(500).json({ success: false, message: 'Database error', error: err.message });
     }
 });
 
-// 3. Admin Login
+// 2b. Admin: Confirm Cash Payment
+app.patch('/api/bookings/:id/confirm-cash', async (req, res) => {
+    try {
+        const booking = await Booking.findByIdAndUpdate(
+            req.params.id,
+            { paymentStatus: 'Cash Confirmed' },
+            { new: true }
+        );
+        if (!booking) {
+            console.log(`[Confirm Error] Booking not found: ${req.params.id}`);
+            return res.status(404).json({ success: false, message: 'Booking not found' });
+        }
+        console.log(`[Confirm Success] Booking ${booking.bookingId} (${booking._id}) marked as Cash Confirmed`);
+        res.json({ success: true, message: 'Cash payment confirmed', booking });
+    } catch (err) {
+        console.error('[Confirm Error]', err);
+        res.status(500).json({ success: false, message: 'Server error', error: err.message });
+    }
+});
+
+// 2c. Get Internal Booking Status (Robust Lookup)
+app.get('/api/bookings/status/:idOrCode', async (req, res) => {
+    try {
+        const query = req.params.idOrCode;
+        console.log(`[Status Check] Querying: ${query}`); // LOGGING ADDED
+        
+        let booking;
+        if (mongoose.Types.ObjectId.isValid(query)) {
+            booking = await Booking.findById(query);
+        } else {
+            booking = await Booking.findOne({ bookingId: query });
+        }
+        
+        if (!booking) {
+            console.log(`[Status Check] NOT FOUND: ${query}`);
+            return res.status(404).json({ success: false, message: 'Booking not found' });
+        }
+        
+        console.log(`[Status Check] SUCCESS: Found ${booking.bookingId} for ${booking.fullName}`);
+        res.json({ 
+            success: true, 
+            paymentStatus: booking.paymentStatus, 
+            bookingId: booking.bookingId,
+            booking: booking 
+        });
+    } catch (err) {
+        console.error(`[Status Check] ERROR: ${err.message}`);
+        res.status(500).json({ success: false, message: 'Server error', error: err.message });
+    }
+});
+
+// 3. Auth & User Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/user', require('./routes/userRoutes'));
+
+// 4. Admin Login
 app.post('/api/admin/login', (req, res) => {
     const { username, password } = req.body;
     if (username === process.env.ADMIN_USERNAME && password === process.env.ADMIN_PASSWORD) {
@@ -112,6 +190,17 @@ app.get('/api/admin/data', async (req, res) => {
         res.json({ inquiries, bookings });
     } catch (err) {
         res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// 5. Clear All Data (Admin only)
+app.delete('/api/admin/clear-data', async (req, res) => {
+    try {
+        await Inquiry.deleteMany({});
+        await Booking.deleteMany({});
+        res.json({ success: true, message: 'All inquiries and bookings have been cleared.' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Error clearing data', error: err.message });
     }
 });
 

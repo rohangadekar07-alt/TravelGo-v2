@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Receipt | TravelGO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #3a86ff;
+            --dark: #0f172a;
+            --slate: #64748b;
+            --success: #10b981;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Controls */
+        .controls {
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            text-decoration: none;
+            border: none;
+        }
+
+        .btn-download { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(58,134,255,0.2); }
+        .btn-download:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(58,134,255,0.3); }
+        
+        .btn-back { background: white; color: var(--dark); border: 1.5px solid #e2e8f0; }
+        .btn-back:hover { background: #f8fafc; }
+
+        /* Receipt Paper Style */
+        .receipt-container {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            padding: 60px;
+            border-radius: 4px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative Background */
+        .receipt-container::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 250px; height: 250px;
+            background: linear-gradient(135deg, rgba(58,134,255,0.05) 0%, transparent 100%);
+            border-radius: 0 0 0 100%;
+            z-index: 0;
+        }
+
+        .receipt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 50px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-area h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--dark);
+            letter-spacing: -1px;
+        }
+        .logo-area h2 span {
+            color: var(--primary);
+        }
+        .logo-area p { color: var(--slate); font-size: 0.85rem; margin-top: 5px; }
+
+        .receipt-title { text-align: right; }
+        .receipt-title h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--dark);
+        }
+        .receipt-title p { color: var(--primary); font-weight: 700; font-size: 0.9rem; margin-top: 5px; }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 40px;
+            margin-bottom: 50px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-block h4 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--slate);
+            margin-bottom: 12px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 5px;
+        }
+
+        .info-content p {
+            font-size: 1rem;
+            color: var(--dark);
+            font-weight: 600;
+            line-height: 1.6;
+        }
+        .info-content span { color: var(--slate); font-weight: 400; font-size: 0.9rem; }
+
+        /* Pricing Table */
+        .pricing-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pricing-table th {
+            text-align: left;
+            padding: 15px;
+            background: #f8fafc;
+            color: var(--slate);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pricing-table td {
+            padding: 20px 15px;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .price-col { text-align: right; }
+
+        .total-area {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 50px;
+        }
+
+        .total-box {
+            width: 280px;
+            background: var(--dark);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        .total-row.grand {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px border rgba(255,255,255,0.1);
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .status-stamp {
+            position: absolute;
+            bottom: 60px;
+            left: 60px;
+            border: 4px solid var(--success);
+            padding: 10px 25px;
+            border-radius: 8px;
+            color: var(--success);
+            font-weight: 900;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            transform: rotate(-15deg);
+            opacity: 0.2;
+            z-index: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .receipt-footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--slate);
+            font-size: 0.8rem;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .controls { display: none; }
+            .receipt-container { box-shadow: none; max-width: 100%; border-radius: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <button onclick="handleBack()" class="btn btn-back">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <button class="btn btn-download" onclick="downloadPDF()">
+            <i class="fas fa-file-pdf"></i> Download PDF Receipt
+        </button>
+    </div>
+
+    <div class="receipt-container" id="receipt">
+        <div class="status-stamp">PAID & CONFIRMED</div>
+
+        <div class="receipt-header">
+            <div class="logo-area">
+                <h2>Travel<span>GO</span></h2>
+                <p>Explore the World with Ease</p>
+            </div>
+            <div class="receipt-title">
+                <h1>Receipt</h1>
+                <p id="receiptNo">NO: #TGO-XXXXX</p>
+                <p id="receiptDate" style="color:var(--slate); font-weight:400; font-size:0.8rem;">Date: --/--/----</p>
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-block">
+                <h4>Customer Details</h4>
+                <div class="info-content">
+                    <p id="custName">--</p>
+                    <span id="custMobile">+91 --</span><br>
+                    <span id="custEmail">--</span>
+                </div>
+            </div>
+            <div class="info-block">
+                <h4>Travel Schedule</h4>
+                <div class="info-content">
+                    <p id="travelDest">--</p>
+                    <span id="travelDate">Date: --</span><br>
+                    <span id="travelMode">Mode: --</span><br>
+                    <span id="paymentMethod">Payment: --</span>
+                </div>
+            </div>
+        </div>
+
+        <table class="pricing-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Subtotal</th>
+                    <th class="price-col">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <strong id="itemPackage">Holiday Package</strong><br>
+                        <span id="itemDuration" style="font-size: 0.8rem; color: var(--slate);">Duration: --</span>
+                    </td>
+                    <td id="subtotalPrice">Rs --</td>
+                    <td class="price-col" id="totalPrice1">Rs --</td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>Platform Fees & Taxes</strong><br>
+                        <span style="font-size: 0.8rem; color: var(--slate);">Standard platform handling</span>
+                    </td>
+                    <td>Included</td>
+                    <td class="price-col">Rs 0.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="total-area">
+            <div class="total-box">
+                <div class="total-row">
+                    <span>Base Amount</span>
+                    <span id="baseAmount">Rs --</span>
+                </div>
+                <div class="total-row">
+                    <span>GST (0%)</span>
+                    <span>Rs 0.00</span>
+                </div>
+                <div class="total-row grand">
+                    <span>Total Paid</span>
+                    <span id="finalTotal">Rs --</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="receipt-footer">
+            <div>
+                <p><strong>TravelGO PVT LTD</strong></p>
+                <p>Pune, Maharashtra, India</p>
+            </div>
+            <div style="text-align: right;">
+                <p>Support: support@travelgo.com</p>
+                <p>www.travelgo.com</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentBookingIdForFilename = 'BKG';
+
+        async function loadReceiptData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const idFromUrl = urlParams.get('id');
+            console.log('Receipt: Loading for ID:', idFromUrl);
+            
+            let booking = {};
+            let displayBookingId = '';
+
+            if (idFromUrl) {
+                // Fetch from Server (Admin flow)
+                try {
+                    const res = await fetch(`/api/bookings/status/${idFromUrl}`);
+                    const data = await res.json();
+                    console.log('Receipt: Server Response:', data);
+                    
+                    if (data.success) {
+                        booking = data.booking;
+                        displayBookingId = data.bookingId;
+                    } else {
+                        throw new Error(data.message || 'Booking not found');
+                    }
+                } catch (err) {
+                    console.error('Receipt Error:', err);
+                    document.body.innerHTML = `
+                        <div style="padding: 50px; text-align: center; font-family: sans-serif;">
+                            <h2 style="color: #ef4444;">❌ Error loading receipt</h2>
+                            <p>${err.message}</p>
+                            <a href="/" style="color: #3b82f6; text-decoration: none;">Return to Home</a>
+                        </div>
+                    `;
+                    return;
+                }
+            } else {
+                // Fetch from sessionStorage (User flow)
+                booking = JSON.parse(sessionStorage.getItem('confirmedBooking') || sessionStorage.getItem('pendingBooking') || '{}');
+                displayBookingId = sessionStorage.getItem('cashBookingId') || booking.bookingId;
+                console.log('Receipt: Local Session Data:', booking);
+            }
+
+            if (booking && booking.fullName) {
+                currentBookingIdForFilename = displayBookingId || 'BKG';
+                
+                document.getElementById('custName').textContent = booking.fullName;
+                document.getElementById('custMobile').textContent = '+91 ' + (booking.mobileNumber || '--');
+                document.getElementById('custEmail').textContent = booking.email || '--'; // Now mapping email
+                document.getElementById('travelDest').textContent = booking.travelSpot;
+                document.getElementById('itemPackage').textContent = booking.travelSpot + ' Holiday Package';
+                document.getElementById('itemDuration').textContent = 'Duration: ' + (booking.duration || '--');
+                document.getElementById('travelMode').textContent = 'Mode: ' + (booking.travelMode || '--');
+                document.getElementById('paymentMethod').textContent = 'Payment: ' + (booking.paymentMethod || 'Online');
+                
+                // Format Date
+                const d = new Date(booking.travelDate);
+                const dateStr = !isNaN(d) ? d.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : '--';
+                document.getElementById('travelDate').textContent = 'Date: ' + dateStr;
+                
+                // Submission Date (or current)
+                const subDate = booking.submittedAt ? new Date(booking.submittedAt) : new Date();
+                document.getElementById('receiptDate').textContent = 'Date: ' + subDate.toLocaleDateString();
+
+                // Price Processing
+                const price = booking.price || 'Rs 0';
+                document.getElementById('subtotalPrice').textContent = price;
+                document.getElementById('totalPrice1').textContent = price;
+                document.getElementById('baseAmount').textContent = price;
+                document.getElementById('finalTotal').textContent = price;
+
+                // ID
+                const finalId = displayBookingId || 'TGO-' + Math.floor(Math.random()*90000);
+                document.getElementById('receiptNo').textContent = 'NO: #' + finalId;
+
+                // Status Stamp adjustment
+                const stamp = document.querySelector('.status-stamp');
+                if (booking.paymentStatus === 'Cash Pending') {
+                    stamp.textContent = 'PENDING APPROVAL';
+                    stamp.style.color = '#f59e0b';
+                    stamp.style.borderColor = '#f59e0b';
+                } else {
+                    stamp.textContent = 'PAID & CONFIRMED';
+                }
+                console.log('Receipt: UI Populated Successfully');
+            } else {
+                console.warn('Receipt: No data found in booking object');
+                document.body.innerHTML = `
+                    <div style="padding: 50px; text-align: center; font-family: sans-serif;">
+                        <h2>No Booking Data Found</h2>
+                        <p>We couldn't find any booking information to display.</p>
+                        <a href="/">Go Back To Website</a>
+                    </div>
+                `;
+            }
+        }
+
+        loadReceiptData();
+
+        function handleBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.close(); // Try to close if new tab
+                setTimeout(() => {
+                    window.location.href = '/'; // Fallback to home
+                }, 100);
+            }
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('receipt');
+            const opt = {
+                margin:       10,
+                filename:     'TravelGO_Receipt_' + currentBookingIdForFilename + '.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>
