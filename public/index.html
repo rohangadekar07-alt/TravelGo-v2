@@ -8,18 +8,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body id="home">
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <img src="images/preloader_logo.png" alt="TravelGO Loading..." id="loaderLogo">
+            <div class="loader-bar"></div>
+        </div>
+    </div>
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container">
-            <div class="logo">Travel<span>GO</span></div>
+            <div class="logo">
+                <i class="fas fa-mountain-sun"></i>
+                Travel<span>GO</span>
+            </div>
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#about">About</a></li>
+                <li><a href="#how-to-book">How to Book</a></li>
                 <li><a href="#destinations">Destinations</a></li>
                 <li><a href="#book">Inquiry</a></li>
                 <li><a href="#reviews">Reviews</a></li>
-                <li class="admin-tab"><a href="/admin" class="admin-btn">Admin</a></li>
             </ul>
             <div class="user-controls">
                 <div id="authLinks" class="auth-links">
@@ -109,6 +119,92 @@
             </div>
         </div>
     </section>
+
+    <!-- How It Works Section -->
+    <section id="how-to-book" class="how-it-works">
+        <div class="container">
+            <span class="process-badge">Simple Process</span>
+            <h2 class="section-title">How it <span>Works</span></h2>
+            <p class="section-subtitle">5 easy steps to find your favorite destination.</p>
+            
+            <div class="process-container">
+                <div class="process-line"></div>
+                <div class="process-steps">
+                    <!-- Step 1 -->
+                    <div class="step-item">
+                        <div class="step-circle-wrap">
+                            <div class="step-circle">
+                                <i class="fas fa-user-plus"></i>
+                                <div class="step-number-pill">01</div>
+                            </div>
+                        </div>
+                        <div class="step-content">
+                            <h4>Register</h4>
+                            <p>Register for free & create your user profile</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="step-item">
+                        <div class="step-circle-wrap">
+                            <div class="step-circle">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <div class="step-number-pill">02</div>
+                            </div>
+                        </div>
+                        <div class="step-content">
+                            <h4>Login</h4>
+                            <p>Sign in to unlock personalized dashboards</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="step-item">
+                        <div class="step-circle-wrap">
+                            <div class="step-circle">
+                                <i class="fas fa-map-marked-alt"></i>
+                                <div class="step-number-pill">03</div>
+                            </div>
+                        </div>
+                        <div class="step-content">
+                            <h4>Explore</h4>
+                            <p>Search & find the perfect holiday spot</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="step-item">
+                        <div class="step-circle-wrap">
+                            <div class="step-circle">
+                                <i class="fas fa-credit-card"></i>
+                                <div class="step-number-pill">04</div>
+                            </div>
+                        </div>
+                        <div class="step-content">
+                            <h4>Payment</h4>
+                            <p>Securely pay through our trusted gateway</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 5 -->
+                    <div class="step-item">
+                        <div class="step-circle-wrap">
+                            <div class="step-circle">
+                                <i class="fas fa-file-invoice"></i>
+                                <div class="step-number-pill">05</div>
+                            </div>
+                        </div>
+                        <div class="step-content">
+                            <h4>Receipt</h4>
+                            <p>Instantly get your digital booking receipt</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
 
     <!-- Destinations Section -->
     <section id="destinations" class="destinations">

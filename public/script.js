@@ -16,30 +16,32 @@ document.addEventListener('DOMContentLoaded', () => {
 // Navbar transparency and Active link on scroll
 window.addEventListener('scroll', () => {
     const navbar = document.querySelector('.navbar');
-    const sections = document.querySelectorAll('section, header');
+    const sections = document.querySelectorAll('header, section');
     const navLinks = document.querySelectorAll('.nav-links a');
     
     // Transparency logic
-    if (window.scrollY > 50) {
+    const scrollPos = window.scrollY || window.pageYOffset;
+    if (scrollPos > 50) {
         navbar.classList.add('scrolled');
     } else {
         navbar.classList.remove('scrolled');
     }
 
     // Scroll Spy: Highlight active link
-    let current = '';
-    sections.forEach(section => {
+    let current = "";
+    sections.forEach((section) => {
         const sectionTop = section.offsetTop;
         const sectionHeight = section.clientHeight;
-        if (pageYOffset >= (sectionTop - 150)) {
-            current = section.getAttribute('id');
+        if (scrollPos >= sectionTop - 200) {
+            current = section.getAttribute("id");
         }
     });
 
-    navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href').includes(current) && current !== null) {
-            link.classList.add('active');
+    navLinks.forEach((link) => {
+        link.classList.remove("active");
+        const href = link.getAttribute("href");
+        if (href === `#${current}` || (href === "/" && !current)) {
+            link.classList.add("active");
         }
     });
 });
@@ -74,7 +76,10 @@ if (inquiryForm) {
         // Auth Check
         const token = localStorage.getItem('token');
         if (!token) {
-            showToast('Please Login or Register first to send an Inquiry.', 'error');
+            showToast('Please Register or Login first to send an Inquiry.', 'error');
+            setTimeout(() => {
+                window.location.href = '/register.html';
+            }, 2000);
             return;
         }
 
@@ -205,9 +210,9 @@ function bookSpot(spotName) {
     // Auth Check
     const token = localStorage.getItem('token');
     if (!token) {
-        showToast('Please Login or Register first to Book a trip.', 'error');
+        showToast('Please Register or Login first to Book your trip.', 'error');
         setTimeout(() => {
-            window.location.href = '/login.html';
+            window.location.href = '/register.html';
         }, 2000);
         return;
     }
@@ -373,3 +378,20 @@ window.onclick = function(event) {
         closeModal();
     }
 }
+
+
+// Handle Preloader
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.classList.add('loading');
+    
+    // Hide preloader after page load + slight buffer for animation feel
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const preloader = document.getElementById('preloader');
+            if (preloader) {
+                preloader.classList.add('fade-out');
+                document.body.classList.remove('loading');
+            }
+        }, 1200); // 1.2s delay for visual impact
+    });
+});

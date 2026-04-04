@@ -17,6 +17,23 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
+        .btn-back-auth {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--slate);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+
+        .btn-back-auth:hover {
+            color: var(--primary);
+            transform: translateX(-4px);
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -207,11 +224,21 @@
         .msg-error { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
         .msg-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
 
+        @media (max-width: 480px) {
+            body { padding: 15px; }
+            .auth-card { padding: 30px 20px; border-radius: 20px; }
+            .auth-header h1 { font-size: 1.5rem; }
+            .logo { font-size: 1.8rem; }
+        }
     </style>
 </head>
 <body>
 
     <div class="auth-card">
+        <a href="/" class="btn-back-auth">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back to Home</span>
+        </a>
         <div class="auth-header">
             <a href="/" class="logo">TravelGO</a>
             <h1>Welcome Back</h1>
