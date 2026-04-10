@@ -495,9 +495,10 @@
                     <label>Username</label>
                     <input type="text" id="username" placeholder="admin" required>
                 </div>
-                <div class="input-group" style="margin-bottom: 30px;">
+                <div class="input-group" style="margin-bottom: 30px; position: relative;">
                     <label>Password</label>
-                    <input type="password" id="password" placeholder="••••••••" required>
+                    <input type="password" id="password" placeholder="••••••••" required style="padding-right: 40px;">
+                    <i class="far fa-eye" id="togglePasswordBtn" style="position: absolute; right: 15px; bottom: 14px; cursor: pointer; color: #64748b;" onclick="togglePasswordVisibility()"></i>
                 </div>
                 <button type="submit" class="btn" style="width: 100%;">Login to Dashboard</button>
                 <p id="errorMsg" style="color: #ef4444; text-align: center; margin-top: 15px; font-weight: 500;"></p>
@@ -2035,6 +2036,21 @@
             }
         `;
         document.head.appendChild(style);
+
+        // Password Visibility Toggle
+        function togglePasswordVisibility() {
+            const pwdInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('togglePasswordBtn');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
     </script>
 </body>
 </html>
