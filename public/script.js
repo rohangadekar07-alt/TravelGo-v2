@@ -2,50 +2,8 @@
 let currentUserEmail = ''; 
 let currentUserFullName = '';
 
-// Auth UI Toggle and Date Restriction
+// Date Restriction
 document.addEventListener('DOMContentLoaded', () => {
-    const token = localStorage.getItem('token');
-    const authLinks = document.getElementById('authLinks');
-    const userProfile = document.getElementById('userProfile');
-
-    if (token) {
-        if (authLinks) authLinks.style.display = 'none';
-        if (userProfile) userProfile.style.display = 'block';
-        
-        // Hide mobile specific auth links in menu
-        document.querySelectorAll('.mobile-only').forEach(el => el.style.display = 'none');
-        
-        // Fetch profile to get real user data
-        fetch('/api/user/profile', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                currentUserEmail = data.user.email;
-                currentUserFullName = data.user.fullName;
-                
-                if (data.user.profileImage) {
-                    const navImg = document.getElementById('navUserImage');
-                    const defaultIcon = document.getElementById('navDefaultAvatar');
-                    if (navImg && defaultIcon) {
-                        navImg.src = data.user.profileImage;
-                        navImg.style.display = 'block';
-                        defaultIcon.style.display = 'none';
-                    }
-                }
-            } else {
-                // If token exists but user was deleted (e.g. database reset)
-                localStorage.removeItem('token');
-                window.location.reload();
-            }
-        }).catch(err => console.error('Profile fetch failed', err));
-
-    } else {
-        if (authLinks) authLinks.style.display = 'flex';
-        if (userProfile) userProfile.style.display = 'none'; // Hide icon for guests
-    }
-
     // Set dynamic date restrictions (Today as minimum)
     const today = new Date().toLocaleDateString('en-CA'); // Get local date in YYYY-MM-DD format
     const travelDate = document.getElementById('travelDate');
@@ -121,16 +79,6 @@ if (inquiryForm) {
     inquiryForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        // Auth Check
-        const token = localStorage.getItem('token');
-        if (!token) {
-            showToast('Please Register or Login first to send an Inquiry.', 'error');
-            setTimeout(() => {
-                window.location.href = '/register.html';
-            }, 2000);
-            return;
-        }
-
         // Show loading state
         const submitBtn = inquiryForm.querySelector('button[type="submit"]');
         const originalBtnContent = submitBtn.innerHTML;
@@ -157,8 +105,7 @@ if (inquiryForm) {
             const response = await fetch('/api/inquiries', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(formData)
             });
@@ -255,16 +202,6 @@ let currentSpot = '';
 
 // Book Spot Function (Opens Modal)
 function bookSpot(spotName) {
-    // Auth Check
-    const token = localStorage.getItem('token');
-    if (!token) {
-        showToast('Please Register or Login first to Book your trip.', 'error');
-        setTimeout(() => {
-            window.location.href = '/register.html';
-        }, 2000);
-        return;
-    }
-
     currentSpot = spotName;
     const pkg = packages[spotName];
     
@@ -306,15 +243,6 @@ if (modalForm) {
         const pkg = packages[currentSpot];
         const selectedMode = document.querySelector('input[name="mode"]:checked').value;
         const enteredEmail = document.getElementById('modalEmail').value;
-
-        // Verify if booking email matches registered account email
-        if (currentUserEmail && enteredEmail.toLowerCase() !== currentUserEmail.toLowerCase()) {
-            showToast('Email mismatch: Please enter your registered account email to proceed.', 'error');
-            submitBtn.innerHTML = originalBtnContent;
-            submitBtn.disabled = false;
-            submitBtn.style.opacity = '1';
-            return;
-        }
 
         const bookingData = {
             fullName: `${document.getElementById('modalFirstName').value} ${document.getElementById('modalMiddleName').value} ${document.getElementById('modalLastName').value}`.trim(),
@@ -464,15 +392,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // WhatsApp Inquiry Function
 async function submitToWhatsApp() {
-    const token = localStorage.getItem('token');
-    if (!token) {
-        showToast('Please Register or Login first to send a WhatsApp Inquiry.', 'error');
-        setTimeout(() => {
-            window.location.href = '/register.html';
-        }, 2000);
-        return;
-    }
-
     const fullName = document.getElementById('fullName').value;
     const email = document.getElementById('email').value;
     const mobileNumber = document.getElementById('mobileNumber').value;
@@ -494,8 +413,7 @@ async function submitToWhatsApp() {
         await fetch('/api/inquiries', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ fullName, email, mobileNumber, travelDate, travelSpot })
         });

@@ -430,9 +430,9 @@ app.get('/api/bookings/status/:idOrCode', async (req, res) => {
     }
 });
 
-// 3. Auth & User Routes
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/user', require('./routes/userRoutes'));
+// 3. Auth & User Routes (Removed as login/register logic is gone)
+// app.use('/api/auth', require('./routes/authRoutes'));
+// app.use('/api/user', require('./routes/userRoutes'));
 
 // 4. Admin Login
 app.post('/api/admin/login', (req, res) => {
@@ -465,15 +465,7 @@ app.get('/api/admin/data', async (req, res) => {
     }
 });
 
-// New: Get Users for Super Admin
-app.get('/api/superadmin/users', async (req, res) => {
-    try {
-        const users = await User.find({ isArchived: { $ne: true } }).sort({ createdAt: -1 });
-        res.json({ success: true, users });
-    } catch (err) {
-        res.status(500).json({ success: false, message: 'Error fetching users' });
-    }
-});
+
 
 // 4b. Admin: Mark Inquiry as Read
 app.patch('/api/inquiries/:id/read', async (req, res) => {
