@@ -821,6 +821,10 @@ section {
         display: none !important;
     }
 
+    .mobile-only {
+        display: block !important;
+    }
+
     .menu-btn {
         display: flex;
         margin-left: 15px;
