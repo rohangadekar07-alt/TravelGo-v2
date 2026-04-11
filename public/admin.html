@@ -1516,8 +1516,25 @@
                                         <p style="font-size:0.78rem;font-weight:600;margin:0;color:#6b7280;">${b.bookingId || '—'}</p>
                                     </div>
                                 </div>
+                                ${isPaid ? `
+                                <div style="margin-top:18px;padding-top:15px;border-top:1px dashed #e5e7eb;">
+                                    <button onclick="window.open('/receipt.html?id=${b._id}','_blank')" style="
+                                        width:100%;padding:12px 20px;
+                                        background:linear-gradient(135deg,#3a86ff,#8338ec);
+                                        color:white;border:none;border-radius:12px;
+                                        font-size:0.9rem;font-weight:700;cursor:pointer;
+                                        font-family:'Outfit',sans-serif;
+                                        display:flex;align-items:center;justify-content:center;gap:10px;
+                                        box-shadow:0 4px 12px rgba(58,134,255,0.3);
+                                        transition:all 0.3s;"
+                                        onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 20px rgba(58,134,255,0.4)'"
+                                        onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(58,134,255,0.3)'">
+                                        <i class="fas fa-print"></i> Print Receipt
+                                    </button>
+                                </div>` : ''}
                             </div>
                         `;
+
                     }).join('');
                 };
 
