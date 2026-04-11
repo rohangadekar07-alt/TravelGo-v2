@@ -3,7 +3,7 @@ let currentUserEmail = '';
 let currentUserFullName = '';
 
 // GATEKEEPER LOGIC (Password Protection)
-const ACCESS_CODE = "TravelGo@2026"; // Secure Code for Deployment demo
+const ACCESS_CODE = "Rohan@1903"; // Secure Code for Deployment demo
 
 function checkAccess() {
     const isUnlocked = sessionStorage.getItem('travelgo_unlocked');
@@ -23,17 +23,22 @@ function verifyAccess() {
     const error = document.getElementById('gatekeeperError');
     const gatekeeper = document.getElementById('gatekeeper');
     
-    if (input.value === ACCESS_CODE) {
+    // Trim spaces and check password
+    if (input.value.trim() === ACCESS_CODE) {
         sessionStorage.setItem('travelgo_unlocked', 'true');
         gatekeeper.classList.add('hidden');
         document.body.style.overflow = 'auto';
-        showToast('Access Granted! Welome to TravelGO.', 'success');
+        showToast('Access Granted! Welcome to TravelGO.', 'success');
     } else {
-        error.textContent = "Invalid access code. Please try again.";
+        console.log("Password mismatch. Expected:", ACCESS_CODE, "Got:", input.value.trim());
+        error.textContent = "Invalid access code. Please check capitalization.";
         input.style.borderColor = "#ff4757";
+        input.classList.add('shake-effect');
+        
         setTimeout(() => {
             error.textContent = "";
             input.style.borderColor = "rgba(255, 255, 255, 0.1)";
+            input.classList.remove('shake-effect');
         }, 3000);
     }
 }
