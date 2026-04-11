@@ -2,8 +2,54 @@
 let currentUserEmail = ''; 
 let currentUserFullName = '';
 
-// Date Restriction
+// GATEKEEPER LOGIC (Password Protection)
+const ACCESS_CODE = "TravelGo@2026"; // Secure Code for Deployment demo
+
+function checkAccess() {
+    const isUnlocked = sessionStorage.getItem('travelgo_unlocked');
+    const gatekeeper = document.getElementById('gatekeeper');
+    
+    if (isUnlocked === 'true') {
+        if (gatekeeper) gatekeeper.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    } else {
+        if (gatekeeper) gatekeeper.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function verifyAccess() {
+    const input = document.getElementById('gatekeeperPass');
+    const error = document.getElementById('gatekeeperError');
+    const gatekeeper = document.getElementById('gatekeeper');
+    
+    if (input.value === ACCESS_CODE) {
+        sessionStorage.setItem('travelgo_unlocked', 'true');
+        gatekeeper.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        showToast('Access Granted! Welome to TravelGO.', 'success');
+    } else {
+        error.textContent = "Invalid access code. Please try again.";
+        input.style.borderColor = "#ff4757";
+        setTimeout(() => {
+            error.textContent = "";
+            input.style.borderColor = "rgba(255, 255, 255, 0.1)";
+        }, 3000);
+    }
+}
+
+// Check access on every page load
 document.addEventListener('DOMContentLoaded', () => {
+    checkAccess();
+    
+    // Add Enter key support for gatekeeper
+    const gateInput = document.getElementById('gatekeeperPass');
+    if (gateInput) {
+        gateInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') verifyAccess();
+        });
+    }
+
     // Set dynamic date restrictions (Today as minimum)
     const today = new Date().toLocaleDateString('en-CA'); // Get local date in YYYY-MM-DD format
     const travelDate = document.getElementById('travelDate');
@@ -11,13 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (travelDate) {
         travelDate.setAttribute('min', today);
-        // travelDate.value = today; // Optional: default to today
     }
     if (modalDate) {
         modalDate.setAttribute('min', today);
-        // modalDate.value = today; // Optional: default to today
     }
 });
+
 
 // Navbar transparency and Active link on scroll
 window.addEventListener('scroll', () => {

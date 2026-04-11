@@ -9,6 +9,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body id="home">
+    <!-- Gatekeeper Overlay -->
+    <div id="gatekeeper" class="gatekeeper-overlay">
+        <div class="gatekeeper-content">
+            <div class="gatekeeper-logo">
+                <i class="fas fa-mountain-sun"></i>
+                Travel<span>GO</span>
+            </div>
+            <h2>Secure Demo Access</h2>
+            <p>Please enter the access code provided with the deployment link to view this project.</p>
+            <div class="gatekeeper-input-wrapper">
+                <input type="password" id="gatekeeperPass" placeholder="Enter Access Code">
+                <button onclick="verifyAccess()">Access Project <i class="fas fa-arrow-right"></i></button>
+            </div>
+            <div id="gatekeeperError" class="gatekeeper-error"></div>
+            <div class="gatekeeper-hint">
+                <i class="fas fa-info-circle"></i> Use the code provided by the developer.
+            </div>
+        </div>
+    </div>
+
     <!-- Preloader -->
     <div id="preloader">
         <div class="loader-content">
