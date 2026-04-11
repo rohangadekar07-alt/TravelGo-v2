@@ -1419,22 +1419,114 @@
             
             // Check role for Super Admin features
             const role = localStorage.getItem('admin_role');
-            // const resetBtn = document.getElementById('resetDataBtn'); // Handled via DangerZone panel
             const settingsNav = document.getElementById('settingsNavItem');
             const dashboardNav = document.getElementById('dashboardNavItem');
             const dangerZone = document.getElementById('dangerZonePanel');
+            const cashNav = document.getElementById('cashNavItem');
+            const inquiryNav = document.querySelector('.nav-item[onclick*="inquiries"]');
 
             if (role === 'superadmin') {
                 if (settingsNav) settingsNav.style.display = 'flex';
                 if (dashboardNav) dashboardNav.style.display = 'flex';
-                
-                // Super Admin starts on Dashboard (All)
+                if (cashNav) cashNav.style.display = 'flex';
+                if (inquiryNav) inquiryNav.style.display = 'flex';
                 switchView('all', dashboardNav);
-            } else {
+
+            } else if (role === 'viewer') {
+                // Viewer: hide everything except bookings
                 if (settingsNav) settingsNav.style.display = 'none';
                 if (dashboardNav) dashboardNav.style.display = 'none';
-                
-                // Regular Admin starts on Bookings directly
+                if (cashNav) cashNav.style.display = 'none';
+                if (inquiryNav) inquiryNav.style.display = 'none';
+
+                // Change sidebar header to identify viewer
+                const sidebarLogo = document.querySelector('.sidebar-header .logo');
+                if (sidebarLogo) sidebarLogo.innerHTML = 'Rohan <span>View</span>';
+
+                // Switch to bookings view
+                const bookingsNav = document.querySelector('.nav-item[onclick*="bookings"]');
+                switchView('bookings', bookingsNav || document.querySelector('.nav-item'));
+
+                // Override renderBookingsList for viewer: show clean read-only cards
+                window._originalRenderBookingsList = renderBookingsList;
+                window.renderBookingsList = function(bookings) {
+                    const bookingList = document.getElementById('bookingList');
+                    if (!bookingList) return;
+                    if (bookings.length === 0) {
+                        bookingList.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#9ca3af;background:white;border-radius:16px;">No bookings found.</div>';
+                        return;
+                    }
+                    bookingList.innerHTML = bookings.map(b => {
+                        const isOnline = b.paymentMethod === 'Online';
+                        const isCash = b.paymentMethod === 'Cash';
+                        const isCancelled = b.paymentStatus === 'Cancelled';
+                        const isPending = b.paymentStatus === 'Cash Pending';
+                        const isPaid = b.paymentStatus === 'Paid' || b.paymentStatus === 'Cash Confirmed';
+
+                        const paymentBadge = isOnline
+                            ? `<span style="background:#eff6ff;color:#1d4ed8;padding:5px 14px;border-radius:50px;font-size:0.78rem;font-weight:700;border:1px solid #dbeafe;"><i class="fas fa-credit-card"></i> Online</span>`
+                            : `<span style="background:#fffbeb;color:#92400e;padding:5px 14px;border-radius:50px;font-size:0.78rem;font-weight:700;border:1px solid #fde68a;"><i class="fas fa-money-bill-wave"></i> Cash</span>`;
+
+                        const statusBadge = isPaid
+                            ? `<span style="background:#f0fdf4;color:#15803d;padding:4px 12px;border-radius:50px;font-size:0.75rem;font-weight:700;border:1px solid #bbf7d0;"><i class="fas fa-check-circle"></i> Confirmed</span>`
+                            : isPending
+                            ? `<span style="background:#fff7ed;color:#c2410c;padding:4px 12px;border-radius:50px;font-size:0.75rem;font-weight:700;border:1px solid #ffedd5;"><i class="fas fa-clock"></i> Pending</span>`
+                            : isCancelled
+                            ? `<span style="background:#fef2f2;color:#b91c1c;padding:4px 12px;border-radius:50px;font-size:0.75rem;font-weight:700;border:1px solid #fecdd3;"><i class="fas fa-times-circle"></i> Cancelled</span>`
+                            : `<span style="background:#eff6ff;color:#1d4ed8;padding:4px 12px;border-radius:50px;font-size:0.75rem;font-weight:700;"><i class="fas fa-info-circle"></i> ${b.paymentStatus}</span>`;
+
+                        const borderLeft = isPaid ? '#10b981' : isPending ? '#f59e0b' : isCancelled ? '#ef4444' : '#3a86ff';
+
+                        return `
+                            <div style="background:white;border-radius:16px;border-left:5px solid ${borderLeft};padding:20px 25px;box-shadow:0 4px 6px rgba(0,0,0,0.04);border:1px solid #e5e7eb;border-left-width:5px;">
+                                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:15px;">
+                                    <div>
+                                        <p style="font-size:0.7rem;color:#9ca3af;font-weight:700;text-transform:uppercase;margin:0 0 3px;">Customer</p>
+                                        <p style="font-size:1.1rem;font-weight:800;margin:0;font-family:'Outfit',sans-serif;color:#111827;">${b.fullName}</p>
+                                    </div>
+                                    <div style="display:flex;gap:8px;flex-wrap:wrap;">${paymentBadge}${statusBadge}</div>
+                                </div>
+                                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:15px;padding-top:15px;border-top:1px solid #f3f4f6;">
+                                    <div>
+                                        <p style="font-size:0.7rem;color:#9ca3af;font-weight:700;text-transform:uppercase;margin:0 0 3px;"><i class="fas fa-envelope" style="color:#3a86ff;"></i> Email</p>
+                                        <p style="font-size:0.88rem;font-weight:600;margin:0;color:#374151;word-break:break-word;">${b.email || '—'}</p>
+                                    </div>
+                                    <div>
+                                        <p style="font-size:0.7rem;color:#9ca3af;font-weight:700;text-transform:uppercase;margin:0 0 3px;"><i class="fas fa-phone" style="color:#10b981;"></i> Mobile</p>
+                                        <p style="font-size:0.88rem;font-weight:600;margin:0;color:#374151;">${b.mobileNumber || '—'}</p>
+                                    </div>
+                                    <div>
+                                        <p style="font-size:0.7rem;color:#9ca3af;font-weight:700;text-transform:uppercase;margin:0 0 3px;"><i class="fas fa-map-marker-alt" style="color:#ec4899;"></i> Destination</p>
+                                        <p style="font-size:0.88rem;font-weight:700;margin:0;color:#374151;">${b.travelSpot || '—'}</p>
+                                    </div>
+                                    <div>
+                                        <p style="font-size:0.7rem;color:#9ca3af;font-weight:700;text-transform:uppercase;margin:0 0 3px;"><i class="fas fa-calendar" style="color:#f59e0b;"></i> Travel Date</p>
+                                        <p style="font-size:0.88rem;font-weight:600;margin:0;color:#374151;">${b.travelDate ? new Date(b.travelDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—'}</p>
+                                    </div>
+                                    <div>
+                                        <p style="font-size:0.7rem;color:#9ca3af;font-weight:700;text-transform:uppercase;margin:0 0 3px;"><i class="fas fa-plane" style="color:#8b5cf6;"></i> Travel Mode</p>
+                                        <p style="font-size:0.88rem;font-weight:600;margin:0;color:#374151;">${b.travelMode || '—'}</p>
+                                    </div>
+                                    <div>
+                                        <p style="font-size:0.7rem;color:#9ca3af;font-weight:700;text-transform:uppercase;margin:0 0 3px;"><i class="fas fa-tag" style="color:#e11d48;"></i> Amount</p>
+                                        <p style="font-size:0.95rem;font-weight:800;margin:0;color:#e11d48;">${b.price || '—'}</p>
+                                    </div>
+                                    <div>
+                                        <p style="font-size:0.7rem;color:#9ca3af;font-weight:700;text-transform:uppercase;margin:0 0 3px;"><i class="fas fa-hashtag" style="color:#6b7280;"></i> Booking ID</p>
+                                        <p style="font-size:0.78rem;font-weight:600;margin:0;color:#6b7280;">${b.bookingId || '—'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                };
+
+            } else {
+                // Regular Admin
+                if (settingsNav) settingsNav.style.display = 'none';
+                if (dashboardNav) dashboardNav.style.display = 'none';
+                if (cashNav) cashNav.style.display = 'flex';
+                if (inquiryNav) inquiryNav.style.display = 'flex';
                 switchView('bookings', document.querySelector('.nav-item[onclick*="bookings"]'));
             }
 

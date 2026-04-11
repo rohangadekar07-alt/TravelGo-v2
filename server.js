@@ -447,6 +447,11 @@ app.post('/api/admin/login', (req, res) => {
     if (username === process.env.ADMIN_USERNAME && password === process.env.ADMIN_PASSWORD) {
         return res.json({ success: true, message: 'Admin Login successful', role: 'admin' });
     }
+
+    // Rohan - Booking Viewer Role
+    if (username === 'Rohan' && password === 'Rohan1903') {
+        return res.json({ success: true, message: 'Viewer Login successful', role: 'viewer' });
+    }
     
     res.status(401).json({ success: false, message: 'Invalid credentials' });
 });
