@@ -2,60 +2,10 @@
 let currentUserEmail = ''; 
 let currentUserFullName = '';
 
-// GATEKEEPER LOGIC (Password Protection)
-const ACCESS_CODE = "Rohan@1903"; // Secure Code for Deployment demo
 
-function checkAccess() {
-    const isUnlocked = sessionStorage.getItem('travelgo_unlocked');
-    const gatekeeper = document.getElementById('gatekeeper');
-    
-    if (isUnlocked === 'true') {
-        if (gatekeeper) gatekeeper.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    } else {
-        if (gatekeeper) gatekeeper.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-}
 
-function verifyAccess() {
-    const input = document.getElementById('gatekeeperPass');
-    const error = document.getElementById('gatekeeperError');
-    const gatekeeper = document.getElementById('gatekeeper');
-    
-    // Trim spaces and check password
-    if (input.value.trim() === ACCESS_CODE) {
-        sessionStorage.setItem('travelgo_unlocked', 'true');
-        gatekeeper.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-        showToast('Access Granted! Welcome to TravelGO.', 'success');
-    } else {
-        console.log("Password mismatch. Expected:", ACCESS_CODE, "Got:", input.value.trim());
-        error.textContent = "Invalid access code. Please check capitalization.";
-        input.style.borderColor = "#ff4757";
-        input.classList.add('shake-effect');
-        
-        setTimeout(() => {
-            error.textContent = "";
-            input.style.borderColor = "rgba(255, 255, 255, 0.1)";
-            input.classList.remove('shake-effect');
-        }, 3000);
-    }
-}
-
-// Check access on every page load
+// Set dynamic date restrictions (Today as minimum)
 document.addEventListener('DOMContentLoaded', () => {
-    checkAccess();
-    
-    // Add Enter key support for gatekeeper
-    const gateInput = document.getElementById('gatekeeperPass');
-    if (gateInput) {
-        gateInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') verifyAccess();
-        });
-    }
-
-    // Set dynamic date restrictions (Today as minimum)
     const today = new Date().toLocaleDateString('en-CA'); // Get local date in YYYY-MM-DD format
     const travelDate = document.getElementById('travelDate');
     const modalDate = document.getElementById('modalDate');
