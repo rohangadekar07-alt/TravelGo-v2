@@ -1229,84 +1229,7 @@
             });
         }
 
-        function renderCashSection() {
-            const pendingList = document.getElementById('cashPendingList');
-            const confirmedList = document.getElementById('cashConfirmedList');
-            const pendingCountEl = document.getElementById('cashPendingCount');
-            const confirmedCountEl = document.getElementById('cashConfirmedCount');
 
-            const pending = allBookings.filter(b => b.paymentStatus === 'Cash Pending');
-            const confirmed = allBookings.filter(b => b.paymentStatus === 'Cash Confirmed');
-
-            pendingCountEl.textContent = pending.length;
-            confirmedCountEl.textContent = confirmed.length;
-
-            const renderCard = (bnq) => {
-                const isPending = bnq.paymentStatus === 'Cash Pending';
-                return `
-                    <div class="inquiry-card" style="border-left: 4px solid ${isPending ? '#f59e0b' : '#10b981'};" id="cash-card-${bnq._id}">
-                        <div class="field">
-                            <span class="field-label">Customer</span>
-                            <span class="field-value">${bnq.fullName}</span>
-                        </div>
-                        <div class="field">
-                            <span class="field-label">Mobile</span>
-                            <span class="field-value">${bnq.mobileNumber}</span>
-                        </div>
-                        <div class="field">
-                            <span class="field-label">Destination</span>
-                            <div class="badge-spot" style="background: ${isPending ? '#fffbeb' : '#ecfdf5'}; color: ${isPending ? '#92400e' : '#065f46'};">${bnq.travelSpot}</div>
-                        </div>
-                        <div class="field">
-                            <span class="field-label">Booking ID</span>
-                            <span class="field-value" style="font-size:0.78rem; color:#64748b;">${bnq.bookingId || '—'}</span>
-                        </div>
-                        <div class="field">
-                            <span class="field-label">Amount</span>
-                            <span class="field-value" style="font-weight:700; color:#e11d48;">${bnq.price}</span>
-                        </div>
-                        ${isPending ? `
-                        <div style="display: flex; gap: 8px; margin-top: 10px;">
-                            <button onclick="confirmCash('${bnq._id}')" style="
-                                flex: 2; padding: 10px;
-                                background: linear-gradient(135deg, #f59e0b, #d97706);
-                                color: white; border: none; border-radius: 10px;
-                                font-size: 0.85rem; font-weight: 700; cursor: pointer;
-                                font-family: 'Outfit', sans-serif; display:flex;
-                                align-items:center; justify-content:center; gap:6px;">
-                                <i class="fas fa-check-circle"></i> Confirm Cash
-                            </button>
-                            <button onclick="cancelCashRequest('${bnq._id}')" style="
-                                flex: 1; padding: 10px;
-                                background: #fff1f2; color: #e11d48; border: 1.5px solid #fecdd3; 
-                                border-radius: 10px; font-size: 0.85rem; font-weight: 700; cursor: pointer;
-                                font-family: 'Outfit', sans-serif; display:flex;
-                                align-items:center; justify-content:center;">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>` : `
-                        <div class="field" style="margin-top:10px; padding-top:10px; border-top:1px dashed #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
-                            <span style="color:#10b981; font-weight:700; font-size:0.85rem;"><i class="fas fa-check-double"></i> Confirmed</span>
-                            <button onclick="openReceipt('${bnq._id}')" title="Print Receipt" style="border:none; background:#ecfdf5; color:#10b981; padding:5px 10px; border-radius:6px; cursor:pointer;">
-                                <i class="fas fa-print"></i> Receipt
-                            </button>
-                        </div>`}
-                    </div>
-                `;
-            };
-
-            if (pending.length === 0) {
-                pendingList.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: #9ca3af; background:white; border-radius:12px;">No pending cash payments.</div>';
-            } else {
-                pendingList.innerHTML = pending.map(renderCard).join('');
-            }
-
-            if (confirmed.length === 0) {
-                confirmedList.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: #9ca3af; background:white; border-radius:12px;">No confirmed cash bookings yet.</div>';
-            } else {
-                confirmedList.innerHTML = confirmed.map(renderCard).join('');
-            }
-        }
 
         function openReceipt(bookingId) {
             window.open(`/receipt.html?id=${bookingId}`, '_blank');
@@ -1338,26 +1261,6 @@
                 const data = await res.json();
                 
                 if (data.success) {
-                    // Update UI cards
-                    const selectors = [`#booking-${bookingDbId}`, `#cash-card-${bookingDbId}`];
-                    selectors.forEach(sel => {
-                        const card = document.querySelector(sel);
-                        if (card) {
-                            card.style.borderLeftColor = '#10b981';
-                            const allSpans = card.querySelectorAll('span');
-                            allSpans.forEach(s => {
-                                if (s.textContent.includes('Cash Pending')) {
-                                    s.innerHTML = '<i class="fas fa-check-circle"></i> Cash Confirmed';
-                                    s.style.color = '#10b981';
-                                }
-                            });
-                            const btn = card.querySelector('button');
-                            if (btn) btn.remove();
-                            const badge = card.querySelector('.badge-spot');
-                            if (badge) { badge.style.background = '#ecfdf5'; badge.style.color = '#065f46'; }
-                        }
-                    });
-
                     Swal.fire({
                         title: 'Success!',
                         text: 'Cash payment confirmed successfully.',
@@ -1365,11 +1268,8 @@
                         timer: 2000,
                         showConfirmButton: false
                     });
-                    
                     await loadDashboardData(); 
-                    if (document.getElementById('cashSection').style.display === 'block') {
-                        renderCashSection();
-                    }
+
                 } else {
                     Swal.fire('Error', data.message || 'Confirmation failed.', 'error');
                     btns.forEach(b => {
@@ -1635,9 +1535,6 @@
                         showConfirmButton: false
                     });
                     await loadDashboardData();
-                    if (document.getElementById('cashSection').style.display === 'block') {
-                        renderCashSection();
-                    }
                 } else {
                     Swal.fire('Error', data.message, 'error');
                 }
@@ -1949,7 +1846,10 @@
                         
                         <div style="grid-column: 1/-1; display:flex; gap:12px; margin-top:10px;">
                             ${!isCashPending && !isCancelled ? `<button onclick="event.stopPropagation(); openReceipt('${bnq._id}')" class="btn-receipt-small" style="flex:1;"><i class="fas fa-file-pdf"></i> Print Receipt</button>` : ''}
-                            ${isCashPending ? `<button onclick="event.stopPropagation(); cancelCashRequest('${bnq._id}')" class="btn-cancel-small" style="flex:1;"><i class="fas fa-trash-can"></i> Reject Booking</button>` : ''}
+                            ${isCashPending ? `
+                                <button onclick="event.stopPropagation(); confirmCash('${bnq._id}')" class="btn-confirm-small" style="flex:2;"><i class="fas fa-check"></i> Confirm Booking</button>
+                                <button onclick="event.stopPropagation(); cancelCashRequest('${bnq._id}')" class="btn-cancel-small" style="flex:1;"><i class="fas fa-trash-can"></i> Reject Booking</button>
+                            ` : ''}
                         </div>
                     </div>
                 </div>`;
@@ -2064,8 +1964,8 @@
 
                         <div style="grid-column: 1/-1; display:flex; gap:12px; margin-top:10px;">
                             ${isPending ? `
-                                <button onclick="event.stopPropagation(); confirmCash('${bnq._id}')" class="btn-confirm-small" style="flex:2;"><i class="fas fa-check"></i> Confirm Payment</button>
-                                <button onclick="event.stopPropagation(); cancelCashRequest('${bnq._id}')" class="btn-cancel-small" style="flex:1;"><i class="fas fa-times"></i> Reject</button>
+                                <button onclick="event.stopPropagation(); confirmCash('${bnq._id}')" class="btn-confirm-small" style="flex:2;"><i class="fas fa-check"></i> Confirm Booking</button>
+                                <button onclick="event.stopPropagation(); cancelCashRequest('${bnq._id}')" class="btn-cancel-small" style="flex:1;"><i class="fas fa-times"></i> Reject Booking</button>
                             ` : `
                                 <button onclick="event.stopPropagation(); openReceipt('${bnq._id}')" class="btn-receipt-small" style="width:100%;"><i class="fas fa-print"></i> Print Receipt</button>
                             `}
