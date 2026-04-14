@@ -1651,10 +1651,12 @@
         const oldLogoutBtn = document.getElementById('logoutBtn');
         if(oldLogoutBtn) oldLogoutBtn.addEventListener('click', logout);
 
-        // Persistence check
+        // Persistence check disabled as per requirement: always show login screen on entry
+        /*
         if (localStorage.getItem('admin_token') === 'active') {
             showDashboard();
         }
+        */
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.querySelector('.sidebar-overlay');
