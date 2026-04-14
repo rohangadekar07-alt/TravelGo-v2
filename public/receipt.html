@@ -441,14 +441,30 @@
                     return;
                 }
             } else {
-                // Fetch from sessionStorage (User flow)
+                // Fetch from sessionStorage or Server
                 const cashId = sessionStorage.getItem('cashBookingId');
+                const cashDbId = sessionStorage.getItem('cashDbId'); // MongoDB _id
                 const confirmedData = sessionStorage.getItem('confirmedBooking');
                 const pendingData = sessionStorage.getItem('pendingBooking');
 
-                if (cashId && pendingData) {
-                    booking = JSON.parse(pendingData);
-                    displayBookingId = cashId;
+                // If it's a cash booking, we MUST check server for latest status
+                if (cashDbId || cashId) {
+                    try {
+                        const qId = cashDbId || cashId;
+                        const res = await fetch(`/api/bookings/status/${qId}`);
+                        const data = await res.json();
+                        if (data.success) {
+                            booking = data.booking;
+                            displayBookingId = data.bookingId;
+                        } else {
+                             // Fallback to local if server fails
+                            booking = JSON.parse(pendingData || '{}');
+                            displayBookingId = cashId;
+                        }
+                    } catch (e) {
+                        booking = JSON.parse(pendingData || '{}');
+                        displayBookingId = cashId;
+                    }
                 } else if (confirmedData) {
                     booking = JSON.parse(confirmedData);
                     displayBookingId = booking.bookingId;
@@ -456,7 +472,7 @@
                     booking = JSON.parse(pendingData || '{}');
                     displayBookingId = booking.bookingId;
                 }
-                console.log('Receipt: Local Session Data:', booking);
+                console.log('Receipt: Resolved Data:', booking);
             }
 
             if (booking && booking.fullName) {
@@ -506,9 +522,31 @@
                 // Status Stamp adjustment
                 const stamp = document.querySelector('.status-stamp');
                 if (booking.paymentStatus === 'Cash Pending') {
-                    stamp.textContent = 'PENDING APPROVAL';
-                    stamp.style.color = '#f59e0b';
-                    stamp.style.borderColor = '#f59e0b';
+                    // Show "Pending Approval" screen instead of the actual receipt
+                    document.body.innerHTML = `
+                        <div style="padding: 100px 30px; text-align: center; font-family: 'Outfit', sans-serif; background: #fffcf0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <div style="width: 80px; height: 80px; background: #fef3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; animation: pulse 2s infinite;">
+                                <i class="fas fa-clock" style="font-size: 2.5rem; color: #d97706;"></i>
+                            </div>
+                            <h1 style="font-size: 2rem; color: #1e293b; margin-bottom: 12px;">Receipt Not Available Yet</h1>
+                            <p style="font-size: 1.1rem; color: #64748b; margin-bottom: 30px; max-width: 500px; line-height: 1.6;">
+                                Your booking (#${displayBookingId}) is currently <strong>awaiting cash confirmation</strong> from our admin. 
+                                The official receipt will be generated automatically once your payment is verified.
+                            </p>
+                            <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+                                <a href="/" style="padding: 14px 28px; background: #3b82f6; color: white; border-radius: 12px; font-weight: 700; text-decoration: none; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">Return Home</a>
+                                <a href="/cash-pending.html" style="padding: 14px 28px; background: white; color: #1e293b; border: 1.5px solid #e2e8f0; border-radius: 12px; font-weight: 700; text-decoration: none;">Track Booking Status</a>
+                            </div>
+                            <style>
+                                @keyframes pulse {
+                                    0% { transform: scale(1); opacity: 1; }
+                                    50% { transform: scale(1.1); opacity: 0.8; }
+                                    100% { transform: scale(1); opacity: 1; }
+                                }
+                            </style>
+                        </div>
+                    `;
+                    return;
                 } else {
                     stamp.textContent = 'PAID & CONFIRMED';
                 }
