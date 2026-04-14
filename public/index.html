@@ -486,12 +486,12 @@
                             </select>
                         </div>
                     </div>
-                    <div class="submit-buttons" style="display: flex; gap: 12px; margin-top: 25px; flex-wrap: wrap;">
-                        <button type="submit" class="btn btn-primary" style="flex: 1.5; min-width: 200px; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                            <i class="fas fa-paper-plane"></i> Submit Inquiry
+                    <div class="submit-buttons" style="display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap;">
+                        <button type="submit" class="btn btn-primary" style="flex: 1; min-width: 220px; display: flex; align-items: center; justify-content: center; gap: 10px; height: 56px; font-weight: 700;">
+                            <i class="fas fa-paper-plane"></i> <span>Submit Inquiry</span>
                         </button>
-                        <button type="button" onclick="submitToWhatsApp()" class="btn" style="flex: 1; min-width: 200px; background: #25d366; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; border: none; border-radius: 12px; transition: 0.3s; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2);">
-                            <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i> Direct WhatsApp
+                        <button type="button" onclick="submitToWhatsApp()" class="btn whatsapp-btn" style="flex: 1; min-width: 220px; background: #25d366; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; border: none; border-radius: 50px; transition: all 0.3s ease; height: 56px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2);">
+                            <i class="fab fa-whatsapp" style="font-size: 1.3rem;"></i> <span>Direct WhatsApp</span>
                         </button>
                     </div>
                     <div id="formStatus" class="form-status" style="margin-top: 15px;"></div>
@@ -614,7 +614,7 @@
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-instagram"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="https://wa.me/919890145825"><i class="fab fa-whatsapp"></i></a>
+                        <a href="javascript:void(0)" onclick="contactWhatsAppDirect()"><i class="fab fa-whatsapp"></i></a>
                     </div>
                 </div>
                 <div class="footer-col">
@@ -750,6 +750,7 @@
     <!-- WhatsApp Floating Button Removed -->
 
 
-    <script src="script.js?v=2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="script.js?v=3"></script>
 </body>
 </html>

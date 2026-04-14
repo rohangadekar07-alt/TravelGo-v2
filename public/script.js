@@ -378,19 +378,90 @@ window.onclick = function(event) {
 document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('loading');
     
-    // Hide preloader after page load + slight buffer for animation feel
+    const preloader = document.getElementById('preloader');
+    
+    // Safety Fallback: Hide preloader after 5 seconds regardless of load status
+    const safetyTimeout = setTimeout(() => {
+        if (preloader && !preloader.classList.contains('fade-out')) {
+            console.log("Preloader: Load event timed out, using fallback.");
+            hidePreloader();
+        }
+    }, 5000);
+
+    function hidePreloader() {
+        if (preloader) {
+            preloader.classList.add('fade-out');
+            document.body.classList.remove('loading');
+        }
+    }
+
     window.addEventListener('load', () => {
-        setTimeout(() => {
-            const preloader = document.getElementById('preloader');
-            if (preloader) {
-                preloader.classList.add('fade-out');
-                document.body.classList.remove('loading');
-            }
-        }, 1200); // 1.2s delay for visual impact
+        clearTimeout(safetyTimeout);
+        setTimeout(hidePreloader, 1200); // Visual buffer
     });
 });
 
-// WhatsApp Inquiry Function
+
+// ── WhatsApp Inquiry Functions ──
+
+// Reusable WhatsApp Contact Choice
+async function contactWhatsAppDirect(customMessage = "") {
+    const contacts = [
+        { name: 'Travel Desk (Official)', number: '919890145825', desc: 'Main booking & inquiry support', icon: 'fa-headset' },
+        { name: 'Support Line 2', number: '918767028639', desc: 'Alternate contact for fast response', icon: 'fa-comments-dollar' }
+    ];
+
+    window._selectedWaIdx = 0; // Default
+
+    const { value: contactIndex } = await Swal.fire({
+        title: 'Connect on WhatsApp',
+        html: `
+            <div class="wa-selection-container">
+                ${contacts.map((c, i) => `
+                    <div class="wa-contact-card ${i === 0 ? 'selected' : ''}" data-index="${i}" id="wa-card-${i}">
+                        <div class="wa-icon">
+                            <i class="fas ${c.icon}"></i>
+                        </div>
+                        <div class="wa-info">
+                            <span class="wa-name">${c.name}</span>
+                            <span class="wa-desc">${c.desc}</span>
+                        </div>
+                        <div class="wa-radio-indicator"></div>
+                    </div>
+                `).join('')}
+            </div>
+        `,
+        icon: 'success',
+        iconColor: '#25d366',
+        showCancelButton: true,
+        confirmButtonColor: '#25d366',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: '<i class="fab fa-whatsapp"></i> Start Chat',
+        didOpen: () => {
+            const cards = document.querySelectorAll('.wa-contact-card');
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    cards.forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    window._selectedWaIdx = card.getAttribute('data-index');
+                });
+            });
+        },
+        preConfirm: () => {
+            return window._selectedWaIdx;
+        }
+    });
+
+    if (contactIndex !== undefined) {
+        const selectedNumber = contacts[parseInt(contactIndex)].number;
+        const finalMsg = customMessage || "Hello! I have a query regarding a travel package.";
+        window.open(`https://wa.me/${selectedNumber}?text=${encodeURIComponent(finalMsg)}`, '_blank');
+    }
+}
+
+
+
+// WhatsApp Inquiry Function (from Form)
 async function submitToWhatsApp() {
     const fullName = document.getElementById('fullName').value;
     const email = document.getElementById('email').value;
@@ -408,30 +479,27 @@ async function submitToWhatsApp() {
         return;
     }
 
-    // Save to DB so admin can see it in dashboard
+    // Save to DB
     try {
         await fetch('/api/inquiries', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ fullName, email, mobileNumber, travelDate, travelSpot })
         });
     } catch (e) {
-        console.log("DB save failed, but proceeding to WhatsApp...");
+        console.log("DB save failed...");
     }
 
-    // Construct Professional WhatsApp message
-    const message = `🌟 *Direct WhatsApp Inquiry* 🌟%0A%0A` +
-        `👤 *Customer Name:* ${fullName}%0A` +
-        `📧 *Email:* ${email}%0A` +
-        `📞 *Mobile:* ${mobileNumber}%0A` +
-        `📍 *Destination:* ${travelSpot}%0A` +
-        `📅 *Preferred Date:* ${travelDate}%0A%0A` +
-        `---%0A` +
-        `*"I have viewed your travel packages and would like to discuss the ${travelSpot} trip in detail via WhatsApp. Looking forward to your response."*%0A%0A` +
+    const message = `🌟 *Direct WhatsApp Inquiry* 🌟\n\n` +
+        `👤 *Customer Name:* ${fullName}\n` +
+        `📧 *Email:* ${email}\n` +
+        `📞 *Mobile:* ${mobileNumber}\n` +
+        `📍 *Destination:* ${travelSpot}\n` +
+        `📅 *Preferred Date:* ${travelDate}\n\n` +
+        `---` +
+        `\n*"I have viewed your travel packages and would like to discuss the ${travelSpot} trip in detail via WhatsApp."*\n\n` +
         `_Sent via TravelGO Official Website_`;
 
-    const whatsappUrl = `https://wa.me/919890145825?text=${message}`;
-    window.open(whatsappUrl, '_blank');
+    contactWhatsAppDirect(message);
 }
+

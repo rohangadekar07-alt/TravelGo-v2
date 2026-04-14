@@ -57,6 +57,11 @@ app.get('/api/config', (req, res) => {
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(uploadDir));
 
+// Root route (Ensure this is before any 404 handlers)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // MongoDB Connection Handler (Cached for Serverless)
 let cachedConnection = null;
 
@@ -556,11 +561,6 @@ app.post('/api/admin/settings/update', async (req, res) => {
     }
 });
 
-// Explicitly serve index.html for the root route (crucial for Vercel)
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
 // 5. 404 Handler (JSON)
 app.use((req, res) => {
     res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found` });
@@ -568,8 +568,19 @@ app.use((req, res) => {
 
 // Start server: only listen locally (not on Vercel which is serverless)
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
+    const serverInstance = app.listen(PORT, () => {
+        console.log(`\n🚀 TravelGO Server is LIVE on port ${PORT}`);
+        console.log(`🔗 Local URL: http://localhost:${PORT}\n`);
+    });
+    
+    serverInstance.on('error', (err) => {
+        if (err.code === 'EADDRINUSE') {
+            console.error(`\n❌ ERROR: Port ${PORT} is already in use.`);
+            console.error(`💡 Try running 'npx kill-port ${PORT}' first.\n`);
+            process.exit(1);
+        } else {
+            console.error('\n❌ Server Startup Error:', err);
+        }
     });
 }
 
