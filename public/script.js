@@ -490,15 +490,15 @@ async function submitToWhatsApp() {
         console.log("DB save failed...");
     }
 
-    const message = `🌟 *Direct WhatsApp Inquiry* 🌟\n\n` +
-        `👤 *Customer Name:* ${fullName}\n` +
-        `📧 *Email:* ${email}\n` +
-        `📞 *Mobile:* ${mobileNumber}\n` +
-        `📍 *Destination:* ${travelSpot}\n` +
-        `📅 *Preferred Date:* ${travelDate}\n\n` +
-        `---` +
-        `\n*"I have viewed your travel packages and would like to discuss the ${travelSpot} trip in detail via WhatsApp."*\n\n` +
-        `_Sent via TravelGO Official Website_`;
+    const message = `*NEW TRAVEL INQUIRY (TravelGO)*\n\n` +
+        `*Name:* ${fullName}\n` +
+        `*Email:* ${email}\n` +
+        `*Mobile:* ${mobileNumber}\n` +
+        `*Destination:* ${travelSpot}\n` +
+        `*Date:* ${travelDate}\n\n` +
+        `--------------------\n` +
+        `*"I have viewed your packages and would like to talk about the ${travelSpot} trip."*\n\n` +
+        `_Sent via TravelGO Official_`;
 
     contactWhatsAppDirect(message);
 }
